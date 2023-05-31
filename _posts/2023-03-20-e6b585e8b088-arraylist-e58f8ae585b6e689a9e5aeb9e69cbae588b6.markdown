@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2023-03-20 08:01:51+00:00
-layout: post
 link: http://121.40.199.110/index.php/2023/03/20/%e6%b5%85%e8%b0%88-arraylist-%e5%8f%8a%e5%85%b6%e6%89%a9%e5%ae%b9%e6%9c%ba%e5%88%b6/
 slug: '%e6%b5%85%e8%b0%88-arraylist-%e5%8f%8a%e5%85%b6%e6%89%a9%e5%ae%b9%e6%9c%ba%e5%88%b6'
 title: 浅谈 ArrayList 及其扩容机制
@@ -48,19 +47,19 @@ tags:
 
 
 
-    
+
     <code>// 默认的容量大小（常量）
     private static final int DEFAULT_CAPACITY = 10;
-    
+
     // 定义的空数组（final修饰，大小固定为0）
     private static final Object[] EMPTY_ELEMENTDATA = {};
-    
+
     // 定义的默认空容量的数组（final修饰，大小固定为0）
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
-    
+
     // 定义的不可被序列化的数组，实际存储元素的数组
-    transient Object[] elementData; 
-    
+    transient Object[] elementData;
+
     // 数组中元素的个数
     private int size;</code>
 
@@ -115,7 +114,7 @@ tags:
 
 
 
-    
+
     <code>// 无参的构造方法
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
@@ -142,7 +141,7 @@ tags:
 
 
 
-    
+
     <code>// 传容量的构造方法
     public ArrayList(int initialCapacity) {
         if (initialCapacity > 0) {
@@ -192,7 +191,7 @@ tags:
 
 
 
-    
+
     <code>// 传入Collection元素列表的构造方法
     public ArrayList(Collection<? extends E> c) {
         // 将列表转化为对应的数组
@@ -244,7 +243,7 @@ tags:
 
 
 
-    
+
     <code>public class Test {
         public static void main(String[] args) {
             // 1.创建Student对象数组
@@ -253,18 +252,18 @@ tags:
                     new Student("小李", 19),
                     new Student("小张", 21)
             };
-            
+
             // 2.将其赋值给Object对象数组
             Object[] objects = students;
-            
+
             // 3.执行if语句前，打印数组的class
             System.out.println("执行前：" + objects.getClass());
-            
+
             // 4.执行上面的代码
             if (objects.getClass() != Object[].class) {
                 objects = Arrays.copyOf(objects, objects.length, Object[].class);
             }
-            
+
             // 5.执行if语句后，打印数组的class
             System.out.println("执行后：" + objects.getClass());
         }
@@ -307,7 +306,7 @@ tags:
 
 
 
-    
+
     <code>public boolean add(E e) {
         modCount++;
         add(e, elementData, size);
@@ -333,7 +332,7 @@ tags:
 
 
 
-    
+
     <code>private void add(E e, Object[] elementData, int s) {
         // 判断元素个数是否等于当前容量
         if (s == elementData.length)
@@ -363,7 +362,7 @@ tags:
 
 
 
-    
+
     <code>private Object[] grow() {
         return grow(size + 1);
     }</code>
@@ -387,7 +386,7 @@ tags:
 
 
 
-    
+
     <code>private Object[] grow(int minCapacity) {
         // 获取老容量，也就是当前容量
         int oldCapacity = elementData.length;

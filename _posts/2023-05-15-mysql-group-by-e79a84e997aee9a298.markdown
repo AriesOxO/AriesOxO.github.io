@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2023-05-15 05:51:13+00:00
-layout: post
 link: http://121.40.199.110/index.php/2023/05/15/mysql-group-by-%e7%9a%84%e9%97%ae%e9%a2%98/
 slug: mysql-group-by-%e7%9a%84%e9%97%ae%e9%a2%98
 title: MySQL GROUP BY 的问题
@@ -23,8 +22,8 @@ tags:
 
 
 
-    
-    mysql> SELECT * FROM   employees GROUP  BY gender; 
+
+    mysql> SELECT * FROM   employees GROUP  BY gender;
     ERROR 1055 (42000): Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'employees.employees.emp_no' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
 
 
@@ -40,7 +39,7 @@ tags:
 
 
 
-    
+
     mysql> DESCRIBE employees;
     +------------+---------------+------+-----+---------+-------+
     | Field      | Type          | Null | Key | Default | Extra |
@@ -83,12 +82,12 @@ SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句
 
 
 
-    
+
     # 🚨
-    SELECT gender, 
-           last_name 
-    FROM   employees 
-    GROUP  BY gender 
+    SELECT gender,
+           last_name
+    FROM   employees
+    GROUP  BY gender
 
 
 
@@ -103,11 +102,11 @@ SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句
 
 
 
-    
+
     # ✅
     SELECT gender,
-    FROM   employees 
-    GROUP  BY gender 
+    FROM   employees
+    GROUP  BY gender
     # ✅<br>SELECT gender,<br>last_name<br>FROM employees<br>GROUP BY gender,<br>last_name
 
 
@@ -171,7 +170,7 @@ SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句
 
 
 
-    
+
     mysql> SELECT @@sql_mode;
     +-----------------------------------------------------------------------------------------------------------------------+
     | @@sql_mode                                                                                                            |
@@ -193,7 +192,7 @@ SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句
 
 
 
-    
+
     SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY,',''));
 
 
@@ -209,7 +208,7 @@ SQL 标准中不允许 SELECT 列表，HAVING 条件语句，或 ORDER BY 语句
 
 
 
-    
+
     mysql> SELECT @@sql_mode;
     +----------------------------------------------------------------------------------------------------+
     | @@sql_mode                                                                                         |
@@ -239,7 +238,7 @@ MySQL 的配置文件名为 `my.cnf`，可通过以下命令查看你位置：
 
 
 
-    
+
     $ mysql --help | grep cnf
                           order of preference, my.cnf, $MYSQL_TCP_PORT,
     /etc/my.cnf /etc/mysql/my.cnf /usr/local/etc/my.cnf ~/.my.cnf
@@ -257,7 +256,7 @@ MySQL 的配置文件名为 `my.cnf`，可通过以下命令查看你位置：
 
 
 
-    
+
     [mysqld]
     -sql_mode=ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
     +sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
@@ -307,12 +306,12 @@ MySQL 的配置文件名为 `my.cnf`，可通过以下命令查看你位置：
 
 
 
-    
-    SELECT gender, 
+
+    SELECT gender,
     -       last_name
-    +       ANY_VALUE(last_name) 
-    FROM   employees 
-    GROUP  BY gender 
+    +       ANY_VALUE(last_name)
+    FROM   employees
+    GROUP  BY gender
 
 
 
@@ -335,12 +334,12 @@ MySQL 的配置文件名为 `my.cnf`，可通过以下命令查看你位置：
 
 
 
-    
+
     # 🚨
-    SELECT gender, 
-           last_name 
-    FROM   employees 
-    GROUP  BY gender 
+    SELECT gender,
+           last_name
+    FROM   employees
+    GROUP  BY gender
 
 
 

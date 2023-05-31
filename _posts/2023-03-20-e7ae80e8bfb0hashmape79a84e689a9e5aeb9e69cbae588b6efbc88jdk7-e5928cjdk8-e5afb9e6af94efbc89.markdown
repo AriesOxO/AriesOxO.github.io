@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2023-03-20 08:22:13+00:00
-layout: post
 link: http://121.40.199.110/index.php/2023/03/20/%e7%ae%80%e8%bf%b0hashmap%e7%9a%84%e6%89%a9%e5%ae%b9%e6%9c%ba%e5%88%b6%ef%bc%88jdk7-%e5%92%8cjdk8-%e5%af%b9%e6%af%94%ef%bc%89/
 slug: '%e7%ae%80%e8%bf%b0hashmap%e7%9a%84%e6%89%a9%e5%ae%b9%e6%9c%ba%e5%88%b6%ef%bc%88jdk7-%e5%92%8cjdk8-%e5%af%b9%e6%af%94%ef%bc%89'
 title: 简述HashMap的扩容机制（JDK7 和JDK8 对比）
@@ -299,9 +298,9 @@ tags:
 
 
 
-作者：我知道你都知道u  
-链接：https://juejin.cn/post/6963814996958511134  
-来源：稀土掘金  
+作者：我知道你都知道u
+链接：https://juejin.cn/post/6963814996958511134
+来源：稀土掘金
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 

@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2022-11-14 14:37:38+00:00
-layout: post
 link: http://121.40.199.110/index.php/2022/11/14/spring-%e5%a6%82%e4%bd%95%e8%a7%a3%e5%86%b3%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96%ef%bc%9f/
 slug: spring-%e5%a6%82%e4%bd%95%e8%a7%a3%e5%86%b3%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96%ef%bc%9f
 title: Spring 如何解决循环依赖？
@@ -71,31 +70,31 @@ tags:
 
 
 
-    
+
     <code>单例的setter注入：
-    
+
     @Service
     public class TestService1 {
-    
+
         @Autowired
         private TestService2 testService2;
-    
+
         public void test1() {
         }
     }
-    
+
     @Service
     public class TestService2 {
-    
+
         @Autowired
         private TestService1 testService1;
-    
+
         public void test2() {
         }
     }
     这是一个经典的循环依赖，但是它能正常运行，得益于spring的内部机制，
     让我们根本无法感知它有问题，因为spring默默帮我们解决了。
-    
+
     复制代码</code>
 
 
@@ -236,9 +235,9 @@ Spring内部有三级缓存：
 
 
 
-作者：刷刷面试  
-链接：https://juejin.cn/post/7077764263493779464  
-来源：稀土掘金  
+作者：刷刷面试
+链接：https://juejin.cn/post/7077764263493779464
+来源：稀土掘金
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 

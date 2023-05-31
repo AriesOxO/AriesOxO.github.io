@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2022-12-05 03:14:37+00:00
-layout: post
 link: http://121.40.199.110/index.php/2022/12/05/java%e7%ba%bf%e7%a8%8b%e6%b1%a0%e8%a7%a3%e6%9e%90/
 slug: java%e7%ba%bf%e7%a8%8b%e6%b1%a0%e8%a7%a3%e6%9e%90
 title: Java线程池解析
@@ -44,10 +43,10 @@ github 地址
 
 <blockquote>
 
-> 
+>
 > [github.com/whx123/Java…](https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fwhx123%2FJavaHome)
-> 
-> 
+>
+>
 </blockquote>
 
 
@@ -151,11 +150,11 @@ github 地址
 
 
 
-    
+
     <code>public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize,long keepAliveTime,TimeUnit unit,
        BlockingQueue<Runnable> workQueue,
        ThreadFactory threadFactory,
-       RejectedExecutionHandler handler) 
+       RejectedExecutionHandler handler)
     复制代码</code>
 
 
@@ -407,7 +406,7 @@ github 地址
 
 
 
-    
+
     <code>       ExecutorService threadPool = Executors.newFixedThreadPool(5);
             for (int i = 0; i < 5; i++) {
                 threadPool.submit(() -> {
@@ -416,7 +415,7 @@ github 地址
                     System.out.print("result## "+object.toString());
                 });
             }
-    
+
     复制代码</code>
 
 
@@ -476,7 +475,7 @@ OK，线程的异常处理，**我们可以直接try...catch捕获。**
 
 
 
-    
+
     <code>  //构造feature对象
       /**
          * @throws RejectedExecutionException {@inheritDoc}
@@ -603,7 +602,7 @@ OK，线程的异常处理，**我们可以直接try...catch捕获。**
 
 
 
-    
+
     <code>ExecutorService threadPool = Executors.newFixedThreadPool(1, r -> {
                 Thread t = new Thread(r);
                 t.setUncaughtExceptionHandler(
@@ -651,7 +650,7 @@ OK，线程的异常处理，**我们可以直接try...catch捕获。**
 
 
 
-    
+
     <code>class ExtendedExecutor extends ThreadPoolExecutor {
         // 这可是jdk文档里面给的例子。。
         protected void afterExecute(Runnable r, Throwable t) {
@@ -880,7 +879,7 @@ SynchronousQueue（同步队列）一个不存储元素的阻塞队列，每个�
 
 
 
-    
+
     <code>  public static ExecutorService newFixedThreadPool(int nThreads, ThreadFactory threadFactory) {
             return new ThreadPoolExecutor(nThreads, nThreads,
                                           0L, TimeUnit.MILLISECONDS,
@@ -972,7 +971,7 @@ SynchronousQueue（同步队列）一个不存储元素的阻塞队列，每个�
 
 
 
-    
+
     <code>   ExecutorService executor = Executors.newFixedThreadPool(10);
                         for (int i = 0; i < Integer.MAX_VALUE; i++) {
                             executor.execute(()->{
@@ -1053,7 +1052,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>   public static ExecutorService newCachedThreadPool(ThreadFactory threadFactory) {
             return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                                           60L, TimeUnit.SECONDS,
@@ -1165,7 +1164,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>  ExecutorService executor = Executors.newCachedThreadPool();
             for (int i = 0; i < 5; i++) {
                 executor.execute(() -> {
@@ -1215,7 +1214,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>  public static ExecutorService newSingleThreadExecutor(ThreadFactory threadFactory) {
             return new FinalizableDelegatedExecutorService
                 (new ThreadPoolExecutor(1, 1,
@@ -1314,7 +1313,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>  ExecutorService executor = Executors.newSingleThreadExecutor();
                     for (int i = 0; i < 5; i++) {
                         executor.execute(() -> {
@@ -1364,7 +1363,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>    public ScheduledThreadPoolExecutor(int corePoolSize) {
             super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS,
                   new DelayedWorkQueue());
@@ -1468,7 +1467,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>    /**
         创建一个给定初始延迟的间隔性的任务，之后的下次执行时间是上一次任务从执行到结束所需要的时间+* 给定的间隔时间
         */
@@ -1496,9 +1495,9 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>    /**
-        创建一个给定初始延迟的间隔性的任务，之后的每次任务执行时间为 初始延迟 + N * delay(间隔) 
+        创建一个给定初始延迟的间隔性的任务，之后的每次任务执行时间为 初始延迟 + N * delay(间隔)
         */
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
                 scheduledExecutorService.scheduleAtFixedRate(()->{
@@ -1560,7 +1559,7 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-    
+
     <code>   //线程池状态
        private static final int RUNNING    = -1 << COUNT_BITS;
        private static final int SHUTDOWN   =  0 << COUNT_BITS;
@@ -1707,9 +1706,9 @@ FixedThreadPool 适用于处理CPU密集型的任务，确保CPU在长期被工�
 
 
 
-作者：捡田螺的小男孩  
-链接：https://juejin.cn/post/6844903889678893063  
-来源：稀土掘金  
+作者：捡田螺的小男孩
+链接：https://juejin.cn/post/6844903889678893063
+来源：稀土掘金
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 

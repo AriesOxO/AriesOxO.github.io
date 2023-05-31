@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2022-12-10 07:41:58+00:00
-layout: post
 link: http://121.40.199.110/index.php/2022/12/10/%e8%b0%b7%e6%ad%8c%e7%bf%bb%e8%af%91host%e6%9b%b4%e6%96%b0%e3%80%9020221210%e5%8f%af%e7%94%a8%e3%80%91/
 slug: '%e8%b0%b7%e6%ad%8c%e7%bf%bb%e8%af%91host%e6%9b%b4%e6%96%b0%e3%80%9020221210%e5%8f%af%e7%94%a8%e3%80%91'
 title: 谷歌翻译host更新【20221210可用】
@@ -56,7 +55,7 @@ tags:
 
 
 
-    
+
     <code>142.250.105.90 translate.google.com.hk
     142.250.105.90  translate.googleapis.com
     </code>

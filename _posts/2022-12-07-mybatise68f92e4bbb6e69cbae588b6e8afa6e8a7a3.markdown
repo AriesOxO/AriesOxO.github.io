@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2022-12-07 09:15:10+00:00
-layout: post
 link: http://121.40.199.110/index.php/2022/12/07/mybatis%e6%8f%92%e4%bb%b6%e6%9c%ba%e5%88%b6%e8%af%a6%e8%a7%a3/
 slug: mybatis%e6%8f%92%e4%bb%b6%e6%9c%ba%e5%88%b6%e8%af%a6%e8%a7%a3
 title: Mybatis插件机制详解
@@ -41,13 +40,13 @@ MyBatis 允许你在已映射语句执行过程中的某一点进行拦截调用
 
 
 
-    
+
     <code>Executor (update, query, flushStatements, commit, rollback, getTransaction, close, isClosed)
-    
+
     ParameterHandler (getParameterObject, setParameters)
-    
+
     ResultSetHandler (handleResultSets, handleOutputParameters)
-    
+
     StatementHandler (prepare, parameterize, batch, update, query)
     </code>
 
@@ -180,10 +179,10 @@ Mybatis的插件实现要实现Interceptor接口，我们看下这个接口定�
 
 
 
-    
-    <code>public interface Interceptor {   
-       Object intercept(Invocation invocation) throws Throwable;       
-       Object plugin(Object target);    
+
+    <code>public interface Interceptor {
+       Object intercept(Invocation invocation) throws Throwable;
+       Object plugin(Object target);
        void setProperties(Properties properties);
     }
     </code>
@@ -249,7 +248,7 @@ Mybatis的插件是采用对四大接口的对象生成动态代理对象的方�
 
 
 
-    
+
     <code>public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
        <em>//确保ExecutorType不为空(defaultExecutorType有可能为空)</em>
        executorType = executorType == null ? defaultExecutorType : executorType;
@@ -266,19 +265,19 @@ Mybatis的插件是采用对四大接口的对象生成动态代理对象的方�
        executor = (Executor) interceptorChain.pluginAll(executor);
        return executor;
     }
-    
+
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
        StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
        statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
        return statementHandler;
     }
-    
+
     public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
        ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
        parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
        return parameterHandler;
     }
-    
+
     public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ParameterHandler parameterHandler, ResultHandler resultHandler, BoundSql boundSql) {
        ResultSetHandler resultSetHandler = new DefaultResultSetHandler(executor, mappedStatement, parameterHandler, resultHandler, boundSql, rowBounds);
        resultSetHandler = (ResultSetHandler) interceptorChain.pluginAll(resultSetHandler);
@@ -299,10 +298,10 @@ Mybatis的插件是采用对四大接口的对象生成动态代理对象的方�
 
 
 
-    
+
     <code>Executor/ParameterHandler/ResultSetHander/StatementHandler
     public Object pluginAll(Object target) {
-    for (Interceptor interceptor : interceptors) {  
+    for (Interceptor interceptor : interceptors) {
         target = interceptor.plugin(target);
       }
        return target;
@@ -343,13 +342,13 @@ Plugin对象
 
 
 
-    
+
     <code>public static Object wrap(Object target, Interceptor interceptor) {
     // 获取插件的Intercepts注解
     Map, Set> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
-    if (interfaces.length > 0) {  
+    if (interfaces.length > 0) {
       return Proxy.newProxyInstance(type.getClassLoader(), interfaces, new Plugin(target, interceptor, signatureMap));
     }
       return target;
@@ -384,9 +383,9 @@ Mybatis的插件都要有Intercepts注解来指定要拦截哪个对象的哪个
 
 
 
-    
+
     <code>public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-    try {  
+    try {
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) <em>{
          return interceptor.intercept(new Invocation(target, method, args));
@@ -418,11 +417,11 @@ Mybatis的插件都要有Intercepts注解来指定要拦截哪个对象的哪个
 
 
 
-    
-    <code>@Intercepts({@Signature(type = Executor.class, method = "query",    
+
+    <code>@Intercepts({@Signature(type = Executor.class, method = "query",
     args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class})})
     public class TestInterceptor implements Interceptor {
-    public Object intercept(Invocation invocation) throws Throwable { 
+    public Object intercept(Invocation invocation) throws Throwable {
     Object target = invocation.getTarget(); <em>//被代理对象</em>
     Method method = invocation.getMethod(); <em>//代理方法</em>
     Object[] args = invocation.getArgs(); <em>//方法参数</em>
@@ -465,7 +464,7 @@ Mybatis的插件开发通过内部提供的Plugin对象可以很简单的开发�
 
 
 
-    
+
     <code>public class TestInterceptor implements Interceptor {
     public Object intercept(Invocation invocation) throws Throwable {
         Object target = invocation.getTarget(); <em>//被代理对象</em>
@@ -586,9 +585,9 @@ _// 假如我们只要拦截Executor对象，那么我们应该这么做_
 
 
 
-    
+
     <code>public Object plugin(final Object target) {
-    if (target instanceof Executor) {  
+    if (target instanceof Executor) {
       return Plugin.wrap(target, this);
     } else {
       return target;
@@ -608,7 +607,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
 
 
 
-    
+
     <code>/**
     Mybatis - 通用分页插件（如果开启二级缓存需要注意）
     */
@@ -617,7 +616,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
     @Log4j
     public class PageHelper implements Interceptor {
     public static final ThreadLocal<Page> localPage = new ThreadLocal<Page>();
-    
+
     <em>/**
      * 开始分页
      *
@@ -627,7 +626,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
     public static void startPage(int pageNum, int pageSize) {
         localPage.set(new Page(pageNum, pageSize));
     }
-    
+
     <em>/**
      * 结束分页并返回结果，该方法必须被调用，否则localPage会一直保存下去，直到下一次startPage
      *
@@ -638,7 +637,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
         localPage.remove();
         return page;
     }
-    
+
     public Object intercept(Invocation invocation) throws Throwable {
         if (localPage.get() == null) {
             return invocation.proceed();
@@ -680,7 +679,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
         }
         return null;
     }
-    
+
     <em>/**
      * 只拦截这两种类型的
      * <br>StatementHandler
@@ -696,11 +695,11 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
             return target;
         }
     }
-    
+
     public void setProperties(Properties properties) {
-    
+
     }
-    
+
     <em>/**
      * 修改原SQL为分页SQL
      *
@@ -716,7 +715,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
         pageSql.append(" , ").append(page.getPageSize());
         return pageSql.toString();
     }
-    
+
     <em>/**
      * 获取总记录数
      *
@@ -760,7 +759,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
             }
         }
     }
-    
+
     <em>/**
      * 代入参数值
      *
@@ -775,7 +774,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
         ParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
         parameterHandler.setParameters(ps);
     }
-    
+
     @Data <em>//采用lombok插件编译</em>
     public static class Page<E> {
         private int pageNum;
@@ -785,14 +784,14 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
         private long total;
         private int pages;
         private List<E> result;
-    
+
         public Page(int pageNum, int pageSize) {
             this.pageNum = pageNum;
             this.pageSize = pageSize;
             this.startRow = pageNum > 0 ? (pageNum - 1) * pageSize : 0;
             this.endRow = pageNum * pageSize;
         }
-    
+
     }
     }</code>
 
@@ -802,7 +801,7 @@ Mybatis插件很强大，可以对Mybatis框架进行很大的扩展。当然，
 
 
 
-原文发布时间为：2018-07-03  
+原文发布时间为：2018-07-03
 本文作者：曹金桂
 
 

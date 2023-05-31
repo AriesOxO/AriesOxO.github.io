@@ -2,7 +2,6 @@
 author: meow
 comments: true
 date: 2023-04-21 03:57:31+00:00
-layout: post
 link: http://121.40.199.110/index.php/2023/04/21/mysql-%e6%9f%a5%e7%9c%8b%e8%a7%86%e5%9b%be%e5%bc%82%e5%b8%b8/
 slug: mysql-%e6%9f%a5%e7%9c%8b%e8%a7%86%e5%9b%be%e5%bc%82%e5%b8%b8
 title: mysql 查看视图异常
@@ -51,10 +50,10 @@ tags:
 
 
 
-  
-`mysql> grant all privileges on *.* to root@"%" identified by ".";`  
-`Query OK, 0 rows affected (0.00 sec)`  
-  
+
+`mysql> grant all privileges on *.* to root@"%" identified by ".";`
+`Query OK, 0 rows affected (0.00 sec)`
+
 `mysql> flush privileges;`
 
 
