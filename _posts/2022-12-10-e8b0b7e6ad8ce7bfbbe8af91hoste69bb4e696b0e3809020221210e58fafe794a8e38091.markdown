@@ -1,0 +1,65 @@
+---
+author: meow
+comments: true
+date: 2022-12-10 07:41:58+00:00
+layout: post
+link: http://121.40.199.110/index.php/2022/12/10/%e8%b0%b7%e6%ad%8c%e7%bf%bb%e8%af%91host%e6%9b%b4%e6%96%b0%e3%80%9020221210%e5%8f%af%e7%94%a8%e3%80%91/
+slug: '%e8%b0%b7%e6%ad%8c%e7%bf%bb%e8%af%91host%e6%9b%b4%e6%96%b0%e3%80%9020221210%e5%8f%af%e7%94%a8%e3%80%91'
+title: 谷歌翻译host更新【20221210可用】
+wordpress_id: 121
+categories:
+- Windows
+tags:
+- host
+- 谷歌翻译
+---
+
+
+
+
+## 修改hosts继续使用谷歌翻译Api
+
+
+
+
+
+
+
+虽然谷歌翻译不再为国内提供网页版翻译服务，且无法访问国外api翻译服务，但translate.google.cn的服务器（原谷歌翻译国内服务器）仍未关闭api翻译服务，所以我们只需要修改hosts将原谷歌翻译api域名重定向至国内服务器即可。
+
+
+
+
+
+
+
+### 配置hosts
+
+
+
+
+
+
+
+在 `C:\Windows\System32\drivers\etc\`路径下找到hosts文件，用记事本打开进行编辑，在最后一行添加ping到的ip空一格再输入要重定向的域名 _translate.googleapis.com_，如`113.108.239.162 translate.googleapis.com`。以 **管理员身份**打开记事本编辑的可直接`ctrl + s`进行保存，没有管理原权限的可以另存后复制后粘贴至原位进行替换。
+
+
+
+
+
+
+
+目前有效IP：
+
+
+
+
+
+
+    
+    <code>142.250.105.90 translate.google.com.hk
+    142.250.105.90  translate.googleapis.com
+    </code>
+
+
+

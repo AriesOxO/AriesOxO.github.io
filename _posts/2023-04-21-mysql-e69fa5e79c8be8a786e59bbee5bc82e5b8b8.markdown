@@ -1,0 +1,69 @@
+---
+author: meow
+comments: true
+date: 2023-04-21 03:57:31+00:00
+layout: post
+link: http://121.40.199.110/index.php/2023/04/21/mysql-%e6%9f%a5%e7%9c%8b%e8%a7%86%e5%9b%be%e5%bc%82%e5%b8%b8/
+slug: mysql-%e6%9f%a5%e7%9c%8b%e8%a7%86%e5%9b%be%e5%bc%82%e5%b8%b8
+title: mysql 查看视图异常
+wordpress_id: 256
+categories:
+- 后端开发
+- 编程
+tags:
+- MySQL
+---
+
+
+
+
+使用Navict 进行视图操作的时候提示权限异常，需要手动进行操作添加权限
+
+
+
+
+
+![](http://121.40.199.110/wp-content/uploads/2023/04/image.png)
+
+
+
+
+
+解决办法：
+
+
+
+
+
+
+
+权限问题，授权 给 root  所有sql 权限
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+`mysql> grant all privileges on *.* to root@"%" identified by ".";`  
+`Query OK, 0 rows affected (0.00 sec)`  
+  
+`mysql> flush privileges;`
+
+
+
+
+
+
+
+`Query OK, 0 rows affected (0.00 sec)`
+
+
+
