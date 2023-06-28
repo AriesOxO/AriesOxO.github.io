@@ -60,7 +60,7 @@ shell
 java -jar arthas-boot.jar
 ```
 
-![](static/QGUgbgvibo6TOmxCUZqccpvpnDe.webp)
+![](../assets/static/QGUgbgvibo6TOmxCUZqccpvpnDe.webp)
 
 ## trace 命令
 
@@ -82,13 +82,13 @@ trace com.xxxx.productmanage.ProductManageController index
 
 效果如图：
 
-![](static/WMwEbhGSkoYXaaxOlMGcvJb7nPe.webp)
+![](../assets/static/WMwEbhGSkoYXaaxOlMGcvJb7nPe.webp)
 
 我们请求 `index()` 方法对应的接口：浏览器刷新指定页面。
 
 查看命令行输出：
 
-![](static/Jd3MbtaM7obM2QxSEPzcN4Akn8d.webp)
+![](../assets/static/Jd3MbtaM7obM2QxSEPzcN4Akn8d.webp)
 
 可以清晰的看到各个方法的执行时间（貌似是命令行语言设置问题导致有些符号异常），如此，我们便可以轻松的定位到方法的执行时间。
 
@@ -124,7 +124,7 @@ Press Q or Ctrl+C to abort.Affect(class count: 2 , method count: 2) cost in 147 
 
 截图如下：
 
-![](static/WklhbDvqyowYsXxE9NScsj3YnDh.webp)
+![](../assets/static/WklhbDvqyowYsXxE9NScsj3YnDh.webp)
 
 #### 方法 2
 
