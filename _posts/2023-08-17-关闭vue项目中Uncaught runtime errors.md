@@ -7,7 +7,7 @@ categories:
 tags:
 - vue
 ---
-## 解决版本
+## 解决方法
 - 在vue.config.js中添加如下配置即可解决
 
 ```js
