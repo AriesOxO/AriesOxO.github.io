@@ -1,21 +1,22 @@
 ---
 author: meow
 comments: true
-title: [mysql] Limit分页重复数据问题分析
+title: Limit分页重复数据问题分析
 categories:
-- 后端
-- 数据库
+  - 后端
+  - 数据库
 tags:
-- mysql
-- 分页
-- limit
+  - mysql
+  - 分页
+  - limit
 ---
+
 ## 问题原因
 - 在进行一次数据导出的过程中，发现导出的数据包含重复数据，sql查询使用group进行分组子查询
   之后再使用limit进行分组。业务上需要联表可能会出现重复数据，在单表上进行测试，分组根据唯一索引进行数据分组，
-测试数据保证数据唯一。<br>
+  测试数据保证数据唯一。<br>
 - 问题sql如下：
-```sql
+``` sql
 SELECT
   *
 FROM
@@ -25,12 +26,12 @@ FROM
 SQL获取testTable表中的数据并且根据testKey去重复，最后再获取分页数据的数据。验证过程中发现，使用distinct
 去重复数据再分页问题依旧。<br>
 - 问题SQL如下：
-```sql
+``` sql
 	SELECT
-	*
-FROM
-	( SELECT DISTINCT testKey FROM testTable GROUP BY testKey ) test
-	LIMIT 100,5
+    *
+  FROM
+    ( SELECT DISTINCT testKey FROM testTable GROUP BY testKey ) test
+    LIMIT 100,5
 ```
 
 ## 问题分析
@@ -39,25 +40,25 @@ limit：子句用于select中，对输出结果集的行数进行约束，limit�
 
 <br>以下是两个参数的说明：
 
-```sql
+``` sql
 SELECT
-column1,column2,...
-FROM
-table
-LIMIT offset , count;
+  column1,column2,...
+  FROM
+  table
+  LIMIT offset , count;
 ```
 <br>参数:
 <br>The offset 是返回集的初始标注，起始点是0，不是1哦
 - 在google查找一番之后，limit分页数据不保证数据唯一，也就是在分页的过程中，由于顺序的不确定性可能会导致
-将已经分页过的数据再次分页到新的数据集之中，可以保证当前分页数据集唯一，但是将每一个数据集也就是页数据汇总之后，会发现
-其中包含有重复数据。呐如何解决这个问题呢？
+  将已经分页过的数据再次分页到新的数据集之中，可以保证当前分页数据集唯一，但是将每一个数据集也就是页数据汇总之后，会发现
+  其中包含有重复数据。呐如何解决这个问题呢？
 
 ## 问题解决
 - limit获取按照不同的数据间距获取不同长度的数据，之所以重复是因为顺序不稳定，在确定顺序之后再去分页，呐这个问题就解决了
-，上面的需求，第一步先去重,group by 或者 distinct,然后再进行order by 排序，排序字段必须唯一，最后再分页
-即可。
+  ，上面的需求，第一步先去重,group by 或者 distinct,然后再进行order by 排序，排序字段必须唯一，最后再分页
+  即可。
 - <br>参考sql：
-```sql
+``` sql
 SELECT
   *
 FROM
