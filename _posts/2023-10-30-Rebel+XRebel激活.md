@@ -23,7 +23,7 @@ XRebel 是不间断运行在 web 应用的交互式分析器，当发现问题�
 
 [官方文档](https://manuals.jrebel.com/jrebel/index.html)
 
- ## 安装
+## 安装激活
 
 1. 通过 IDEA 插件仓库查询JRebel/XRebel。
 2. 由于该插件为收费，我们需要对插件进行激活
