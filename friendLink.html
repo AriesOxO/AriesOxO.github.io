@@ -1,3 +1,81 @@
 ---
 layout: page
 ---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>友情链接</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f9fa; /* 背景色可以根据需要调整 */
+    }
+    h1 {
+      text-align: center;
+    }
+    .links-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .link-item {
+      margin: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+    .link-item a {
+      text-decoration: none;
+      color: #007BFF;
+      display: block;
+      padding: 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease-in-out;
+    }
+    .link-item:hover {
+      transform: translateY(-5px);
+    }
+    .link-item:hover a {
+      background-color: #f0f0f0;
+    }
+    /* 随机生成浅一点的背景颜色 */
+    .link-item {
+      background-color: #e0e0e0; /* 默认颜色 */
+    }
+    /* JavaScript 生成随机颜色 */
+
+  </style>
+</head>
+<body>
+
+<div class="links-container">
+  <div class="link-item"><a href="https://tech.meituan.com/" target="_blank">美团技术团队</a></div>
+  <div class="link-item"><a href="http://www.ruanyifeng.com/blog/" target="_blank">阮一峰的网络日志</a></div>
+  <div class="link-item"><a href="http://springboot.fun/" target="_blank">Spring Boot中文导航</a></div>
+  <div class="link-item"><a href="http://springcloud.fun/" target="_blank">Spring Cloud中文导航</a></div>
+  <div class="link-item"><a href="http://cmsblogs.com/" target="_blank">Java技术驿站</a></div>
+  <!-- 添加更多的友情链接 -->
+</div>
+<!-- 将 JavaScript 代码放在这里 -->
+<script>
+  function getRandomLightColor() {
+    // 控制 RGB 组件的值在较高范围，确保颜色偏向浅色
+    var r = Math.floor(Math.random() * 100) + 155; // 155 - 255
+    var g = Math.floor(Math.random() * 100) + 155; // 155 - 255
+    var b = Math.floor(Math.random() * 100) + 155; // 155 - 255
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+  var linkItems = document.querySelectorAll('.link-item');
+  linkItems.forEach(function(item) {
+    item.style.backgroundColor = getRandomLightColor();
+  });
+</script>
+</body>
+</html>
+
+
+
