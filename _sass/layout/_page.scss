@@ -47,6 +47,11 @@ html,
   @media print {
     padding-bottom: 0;
   }
+  background-image: url(/assets/bak.svg);
+  /*background-size: 100%;*/
+  background-position: center;
+  /*background-color: white;*/
+  font-family: Ubuntu;
 }
 .hide-footer {
   .page__content {
