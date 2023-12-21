@@ -32,6 +32,16 @@ XRebel 是不间断运行在 web 应用的交互式分析器，当发现问题�
 - 生成 GUID：在线 GUID 地址
 - 将服务器地址与 GUID 拼接后填入 Team URL
 - 点击 CHANGE LICENSE 到此，JRebel 就激活完成了。
+3. 2023年12月21日 新增激活方法
+   - 使用说明
+   - Jrebel License Server! (兼容 2023.4.0 +)
+   - JRebel 激活地址: http://42.193.18.168:8088/01371537-b252-42d5-bf05-9af98f321b98
+   - JRebel 激活邮箱: 118392072@qq.com
+   - JRebel 无限试用，请将以下内容拷贝到命令提示符中
+   - 执行:
+   ``` curl https://register.jpy.wang/ReRegister/src/main/java/jrebel/JrebelMain.java -o tmp.java && java tmp.java && del tmp.java```
+   - [解决方式来源](https://www.jpy.wang/page/jrebel.html)
+
 
 ## 设置
 1. 设置为离线工作模式，点击 WORK OFFLICE（File-setting-JRebel/XRebel）
