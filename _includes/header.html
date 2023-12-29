@@ -1,29 +1,10 @@
 {%- if include.theme == 'dark' -%}
-<header class="header header--dark" {%- if include.background -%}
-        style="background: {{ include.background }};" {%- endif -%}
-        xmlns:position="http://www.w3.org/1999/xhtml">
+  <header class="header header--dark" {%- if include.background -%} style="background: {{ include.background }};" {%- endif -%}>
 {%- elsif include.theme == 'light' -%}
   <header class="header header--light" {%- if include.background -%} style="background: {{ include.background }};" {%- endif -%}>
 {%- else -%}
   <header class="header" {%- if include.background -%} style="background: {{ include.background }};" {%- endif -%}>
 {%- endif -%}
-    <style>
-      .search-box {
-        position: relative; /* 相对定位 */
-      }
-
-      .search-img {
-        position: absolute; /* 绝对定位相对于父元素 .search-box */
-        top: 50%; /* 将图像上边缘放置在父元素的中央位置 */
-        transform: translateY(-50%); /* 垂直居中，通过向上平移自身高度的一半 */
-        left: 5px; /* 调整图像距离左边的距离，根据需要调整 */
-      }
-
-      /* 根据需要调整搜索框的样式 */
-      .search-box input {
-        padding-left: 25px; /* 为了避免图像遮挡输入内容，增加左边内边距 */
-      }
-    </style>
     <div class="main">
       <div class="header__title">
         <div class="header__brand">
@@ -54,7 +35,7 @@
             {%- endif -%}
           {%- endfor -%}
           {%- if site.search.provider -%}
-            <li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"> <img src="assets/search.img" class="search-img" width="10px" height="10px"></i></button></li>
+            <li><button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button></li>
           {%- endif -%}
         </ul>
       </nav>
