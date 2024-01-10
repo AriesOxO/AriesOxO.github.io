@@ -11,6 +11,4 @@ tags:
 
 1. 本地资源直接使用绝对路径解决
 
-```vue
-![图片pic1]({{ "/assets/images/test.jpg" | absolute_url }})
-```
+![20240110163353.png]({{ "/assets/images/blogimg/20240110163353.png" | absolute_url }})
