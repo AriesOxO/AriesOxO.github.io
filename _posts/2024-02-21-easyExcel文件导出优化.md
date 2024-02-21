@@ -246,7 +246,7 @@ public class EasyExcelUtils {
 }
 
 ```
-## 调用示例
+## 3.调用示例
 ### 动态表头导出,不使用实体类导出
 1. 查询List<Map<String,Object>>类型数据
 2. 定义数组
@@ -308,11 +308,12 @@ EasyExcelUtils easyExcelUtils = new EasyExcelUtils();
 easyExcelUtils.simpleWrite(d,TestExportDto.class,response);
 
 ```
-## 参考文档
+## 4.参考文档
 
-https://www.yuque.com/easyexcel/doc/easyexcel (EasyExcel 官网)
-https://blog.csdn.net/weixin_44811578/article/details/107101248 （Excel文档的字体，背景色，自动列宽的设置参考）
-https://www.cnblogs.com/October-28/p/15686452.html (原文参考)
+1. https://www.yuque.com/easyexcel/doc/easyexcel (EasyExcel 官网)
+2. https://blog.csdn.net/weixin_44811578/article/details/107101248 （Excel文档的字体，背景色，自动列宽的设置参考）
+3. https://www.cnblogs.com/October-28/p/15686452.html (原文地址)
+
 
 
 
