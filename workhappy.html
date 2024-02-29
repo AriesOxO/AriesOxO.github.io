@@ -1,0 +1,170 @@
+---
+layout: page
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <h2 text-align: center>工作性价比计算器</h2>
+  <title>工作性价比计算器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: #f2f2f2;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .calculator-container {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    form input[type="number"],
+    form select {
+      width: calc(100% - 24px);
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: calc(100% - 24px);
+      background-color: #007bff;
+      color: #fff;
+      padding: 12px 20px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result-container {
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .result-container h4 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #result {
+      font-size: 24px;
+      font-weight: bold;
+      color: #007bff;
+      margin-top: 10px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="calculator-container">
+  <div class="grid-container">
+    <form id="workCalculatorForm" class="left">
+      <label for="averageSalary">平均日薪：</label>
+      <input type="number" id="averageSalary" value="285" oninput="calculateWorkValue()" required >
+
+      <label for="workHours">工作时长（小时）：</label>
+      <input type="number" id="workHours" value="8" oninput="calculateWorkValue()" required>
+
+      <label for="commuteHours">通勤时长（小时）：</label>
+      <input type="number" id="commuteHours" value="0.2" oninput="calculateWorkValue()" required>
+
+      <label for="slackHours">摸鱼时长（小时）：</label>
+      <input type="number" id="slackHours" value="3" step="0.1" oninput="calculateWorkValue()" required>
+
+      <label for="educationFactor">学历系数：</label>
+      <select id="educationFactor" oninput="calculateWorkValue()" required>
+        <option value="0.8">专科及以下</option>
+        <option value="1.0">普通本科</option>
+        <option value="1.2">211/985 本科</option>
+        <option value="1.4">普通硕士</option>
+        <option value="1.6">211/985 硕士</option>
+        <option value="1.8">普通博士</option>
+        <option value="2.0">211/985 博士</option>
+      </select>
+
+      <label for="environmentFactor">工作环境系数：</label>
+      <select id="environmentFactor" oninput="calculateWorkValue()" required>
+        <option value="1.0">普通工作环境</option>
+        <option value="0.8">偏僻地区或郊区</option>
+        <option value="0.9">工厂、工地、艰苦户外</option>
+        <option value="1.1">CBD、体制内等</option>
+      </select>
+
+      <label for="genderFactor">异性环境系数：</label>
+      <select id="genderFactor" oninput="calculateWorkValue()" required>
+        <option value="1.0">周围好看的异性不多不少</option>
+        <option value="0.9">周围没有好看异性</option>
+        <option value="1.1">周围很多好看异性</option>
+      </select>
+
+      <label for="colleagueFactor">同事环境系数：</label>
+      <select id="colleagueFactor" oninput="calculateWorkValue()" required>
+        <option value="1.0">周围基本上都是普通同事</option>
+        <option value="0.95">周围脑残同事较多</option>
+        <option value="1.05">周围优秀同事较多</option>
+      </select>
+
+      <button type="button" onclick="calculateWorkValue()">计算工作性价比</button>
+    </form>
+    <div class="result-container">
+      <h4 id="result">计算结果：0</h4>
+    </div>
+  </div>
+</div>
+
+<script>
+  function calculateWorkValue() {
+    const averageSalary = parseFloat(document.getElementById('averageSalary').value);
+    const environmentFactor = parseFloat(document.getElementById('environmentFactor').value);
+    const genderFactor = parseFloat(document.getElementById('genderFactor').value);
+    const colleagueFactor = parseFloat(document.getElementById('colleagueFactor').value);
+    const workHours = parseFloat(document.getElementById('workHours').value);
+    const commuteHours = parseFloat(document.getElementById('commuteHours').value);
+    const slackHours = parseFloat(document.getElementById('slackHours').value);
+    const educationFactor = parseFloat(document.getElementById('educationFactor').value);
+    const compositeFactor = 1 * environmentFactor * genderFactor * colleagueFactor;
+    const workValue = (averageSalary * compositeFactor) / (35 * (workHours + commuteHours - 0.5 * slackHours) * educationFactor);
+
+    document.getElementById('result').innerHTML = `计算结果: ${workValue.toFixed(2)}`;
+
+  }
+</script>
+</body>
+</html>
