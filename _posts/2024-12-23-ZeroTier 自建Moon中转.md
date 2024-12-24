@@ -1,3 +1,16 @@
+---
+author: meow
+comments: true
+title: zerotier自建Moon中转
+categories:
+- 服务器
+tags:
+- ZeroTier
+- 内网穿透
+- debian
+---
+
+
 什么？网络条件差劲打洞不成功？还有多的服务器？那就来自建 Zerotier 的 Moon 中转吧～
 
 关于 Zerotier 的使用可以参见之前的一篇文章 [使用 ZeroTier 进行 Minecraft 多人联机](https://blog.isteed.cc/post/multiplayer-with-zerotier/)
