@@ -5,9 +5,9 @@ title: fancontrol温度控制
 categories:
 - 服务器
 tags:
-- fancontrol
-- debain
-- linux
+- Fancontrol
+- Debain
+- Linux
 ---
 
 # Debian 上使用 fancontrol 进行温度控制
