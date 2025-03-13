@@ -15,67 +15,6 @@ tags:
  最近要实现一个安全审计功能,需要记录用户操作系统过程中下载数据的所有行为，具体到实际执行的sql,核心需要获取到接口执行过程中所有的sql语句。
 
 ### 拦截器实现以及解释
-# MyBatis 拦截器设计文档
-
-## 1. 拦截点选择
-- **`@Intercepts` 使用 `StatementHandler.query`**
-  - 原因：它是 MyBatis 执行 SQL 的底层入口，能捕获所有查询，包括动态 SQL。
-  - 优势：相比 `Executor.query`，`StatementHandler` 更稳定，不受 MyBatis-Plus 等框架的重写影响。
-
-## 2. SQL 捕获与存储
-- **`SQL_HOLDER` 使用 `ThreadLocal` 和 `ConcurrentLinkedQueue`**
-  - 目的：确保线程隔离和并发安全。
-  - 实现：每个线程独立维护自己的 SQL 列表，避免多线程干扰。
-- **`captureSql`**
-  - 功能：处理原始 SQL 的格式化（如去除多余空格），并调用参数替换逻辑。
-  - 目标：确保捕获的 SQL 可读性好。
-
-## 3. 参数替换
-- **`replaceParameters`**
-  - 方法：使用正则表达式匹配 SQL 中的 `?` 占位符，按顺序替换为参数值。
-  - 优化：借助 `StringBuffer` 高效拼接，避免字符串不可变带来的性能问题。
-  - 细节：通过 `Matcher` 遍历所有 `?`，确保替换准确无遗漏。
-
-## 4. 参数值提取
-- **`getParameterValue`**
-  - 支持多种类型参数的提取：
-    - **简单类型**
-      如 `String`、`Integer`，直接返回原始值。
-    - **List 类型**
-      处理 `<foreach>` 生成的 `list[0]`、`list[1]` 等参数名，提取对应索引的值。
-    - **对象类型**
-      通过 `PropertyUtils` 反射获取属性值（需引入 `commons-beanutils`）。
-  - **异常处理**
-    获取失败时返回 `"unknown"`，避免中断执行，确保拦截器健壮性。
-
-## 5. 值格式化
-- **`formatValue`**
-  - 目标：确保参数值符合 SQL 语法。
-  - 规则：
-    - **字符串**
-      加单引号并转义内部单引号（如 `'value'`）。
-    - **List**
-      展开为逗号分隔的字符串（如 `'key1', 'key2'`）。
-    - **其他类型**
-      如数字，直接转为字符串（如 `123`）。
-    - **空值**
-      返回 `NULL`，符合 SQL 标准。
-
-## 6. 清理与获取
-- **`clearSql`**
-  - 功能：清理线程数据，移除 `ThreadLocal` 中的内容。
-  - 重要性：防止内存泄漏，尤其在长生命周期线程中。
-- **`getCapturedSql`**
-  - 功能：返回拼接后的 SQL 列表，用分号分隔。
-  - 用途：便于业务层获取并记录日志。
-
-## 7. 插件机制
-- **`plugin`**
-  - 作用：决定拦截器是否生效，通过 `Plugin.wrap` 包装目标对象（`StatementHandler`）。
-  - 调试：日志输出确认包装目标，便于排查问题。
-- **`setProperties`**
-  - 功能：提供扩展性，可通过配置文件设置拦截器属性。
-  - 现状：当前未使用，但保留了接口。
 
 ```java
 
@@ -299,8 +238,68 @@ public class SqlCaptureInterceptor implements Interceptor {
     }
 }
 ```
-### 详细解释
 
+### 详细解释
+-  MyBatis 拦截器设计文档
+1. 拦截点选择
+- **`@Intercepts` 使用 `StatementHandler.query`**
+  - 原因：它是 MyBatis 执行 SQL 的底层入口，能捕获所有查询，包括动态 SQL。
+  - 优势：相比 `Executor.query`，`StatementHandler` 更稳定，不受 MyBatis-Plus 等框架的重写影响。
+
+2. SQL 捕获与存储
+- **`SQL_HOLDER` 使用 `ThreadLocal` 和 `ConcurrentLinkedQueue`**
+  - 目的：确保线程隔离和并发安全。
+  - 实现：每个线程独立维护自己的 SQL 列表，避免多线程干扰。
+- **`captureSql`**
+  - 功能：处理原始 SQL 的格式化（如去除多余空格），并调用参数替换逻辑。
+  - 目标：确保捕获的 SQL 可读性好。
+
+3. 参数替换
+- **`replaceParameters`**
+  - 方法：使用正则表达式匹配 SQL 中的 `?` 占位符，按顺序替换为参数值。
+  - 优化：借助 `StringBuffer` 高效拼接，避免字符串不可变带来的性能问题。
+  - 细节：通过 `Matcher` 遍历所有 `?`，确保替换准确无遗漏。
+
+4. 参数值提取
+- **`getParameterValue`**
+  - 支持多种类型参数的提取：
+    - **简单类型**
+      如 `String`、`Integer`，直接返回原始值。
+    - **List 类型**
+      处理 `<foreach>` 生成的 `list[0]`、`list[1]` 等参数名，提取对应索引的值。
+    - **对象类型**
+      通过 `PropertyUtils` 反射获取属性值（需引入 `commons-beanutils`）。
+  - **异常处理**
+    获取失败时返回 `"unknown"`，避免中断执行，确保拦截器健壮性。
+
+5. 值格式化
+- **`formatValue`**
+  - 目标：确保参数值符合 SQL 语法。
+  - 规则：
+    - **字符串**
+      加单引号并转义内部单引号（如 `'value'`）。
+    - **List**
+      展开为逗号分隔的字符串（如 `'key1', 'key2'`）。
+    - **其他类型**
+      如数字，直接转为字符串（如 `123`）。
+    - **空值**
+      返回 `NULL`，符合 SQL 标准。
+
+6. 清理与获取
+- **`clearSql`**
+  - 功能：清理线程数据，移除 `ThreadLocal` 中的内容。
+  - 重要性：防止内存泄漏，尤其在长生命周期线程中。
+- **`getCapturedSql`**
+  - 功能：返回拼接后的 SQL 列表，用分号分隔。
+  - 用途：便于业务层获取并记录日志。
+
+7. 插件机制
+- **`plugin`**
+  - 作用：决定拦截器是否生效，通过 `Plugin.wrap` 包装目标对象（`StatementHandler`）。
+  - 调试：日志输出确认包装目标，便于排查问题。
+- **`setProperties`**
+  - 功能：提供扩展性，可通过配置文件设置拦截器属性。
+  - 现状：当前未使用，但保留了接口。
 
 ### 使用示例
 1. 配置到数据源
