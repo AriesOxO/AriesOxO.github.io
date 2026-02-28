@@ -6,7 +6,7 @@
 
   var CANVAS_SIZE = 320;
 
-  /* ── 形状绘制函数 ─────────────────────────────── */
+  /* ── 形状绘制 ─────────────────────────────────── */
   var shapes = {
     '❤️ 爱心': function (ctx, s) {
       ctx.beginPath();
@@ -20,71 +20,77 @@
       var cx = s / 2, cy = s / 2, ro = s * 0.44, ri = s * 0.18, n = 5;
       ctx.beginPath();
       for (var i = 0; i < n * 2; i++) {
-        var a = (i * Math.PI / n) - Math.PI / 2;
-        var r = i % 2 === 0 ? ro : ri;
-        var x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        var a = (i * Math.PI / n) - Math.PI / 2, r = i % 2 === 0 ? ro : ri;
+        i === 0 ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
+                : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
       }
       ctx.closePath(); ctx.fill();
     },
     '🐱 猫咪': function (ctx, s) {
       var cx = s / 2, cy = s * 0.58, r = s * 0.32;
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      [[cx - r * 0.55, cy - r * 0.75, cx - r * 0.85, cy - r * 1.5, cx - r * 0.15, cy - r * 0.95],
-       [cx + r * 0.55, cy - r * 0.75, cx + r * 0.85, cy - r * 1.5, cx + r * 0.15, cy - r * 0.95]
-      ].forEach(function (e) {
-        ctx.beginPath(); ctx.moveTo(e[0], e[1]); ctx.lineTo(e[2], e[3]); ctx.lineTo(e[4], e[5]); ctx.closePath(); ctx.fill();
-      });
+      [[cx-r*.55,cy-r*.75,cx-r*.85,cy-r*1.5,cx-r*.15,cy-r*.95],
+       [cx+r*.55,cy-r*.75,cx+r*.85,cy-r*1.5,cx+r*.15,cy-r*.95]
+      ].forEach(function(e){ ctx.beginPath(); ctx.moveTo(e[0],e[1]); ctx.lineTo(e[2],e[3]); ctx.lineTo(e[4],e[5]); ctx.closePath(); ctx.fill(); });
     },
     '🐰 兔子': function (ctx, s) {
       var cx = s / 2, cy = s * 0.65, r = s * 0.27;
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx - r * 0.42, cy - r * 1.55, r * 0.14, r * 0.62, -0.18, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx + r * 0.42, cy - r * 1.55, r * 0.14, r * 0.62,  0.18, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx-r*.42, cy-r*1.55, r*.14, r*.62, -0.18, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx+r*.42, cy-r*1.55, r*.14, r*.62,  0.18, 0, Math.PI*2); ctx.fill();
     },
     '🐶 狗狗': function (ctx, s) {
       var cx = s / 2, cy = s * 0.5, r = s * 0.3;
       ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx - r * 0.9, cy + r * 0.15, r * 0.2, r * 0.48, 0.35, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx + r * 0.9, cy + r * 0.15, r * 0.2, r * 0.48, -0.35, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx-r*.9, cy+r*.15, r*.2, r*.48,  0.35, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx+r*.9, cy+r*.15, r*.2, r*.48, -0.35, 0, Math.PI*2); ctx.fill();
     },
     '🐟 小鱼': function (ctx, s) {
-      var cx = s * 0.43, cy = s / 2, rx = s * 0.33, ry = s * 0.22;
-      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx + rx * 0.75, cy); ctx.lineTo(cx + rx * 1.65, cy - ry * 1.15); ctx.lineTo(cx + rx * 1.65, cy + ry * 1.15); ctx.closePath(); ctx.fill();
+      var cx = s*.43, cy = s/2, rx = s*.33, ry = s*.22;
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx+rx*.75,cy); ctx.lineTo(cx+rx*1.65,cy-ry*1.15); ctx.lineTo(cx+rx*1.65,cy+ry*1.15); ctx.closePath(); ctx.fill();
     },
     '🌙 月亮': function (ctx, s) {
-      var cx = s / 2, cy = s / 2, r = s * 0.4;
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      var cx = s/2, cy = s/2, r = s*.4;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
       ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath(); ctx.arc(cx + r * 0.42, cy - r * 0.08, r * 0.8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx+r*.42, cy-r*.08, r*.8, 0, Math.PI*2); ctx.fill();
       ctx.globalCompositeOperation = 'source-over';
     },
     '🌸 樱花': function (ctx, s) {
-      var cx = s / 2, cy = s / 2, pd = s * 0.22, pr = s * 0.2;
+      var cx = s/2, cy = s/2, pd = s*.22, pr = s*.2;
       for (var i = 0; i < 5; i++) {
-        var a = (i / 5) * Math.PI * 2;
-        ctx.beginPath();
-        ctx.ellipse(cx + pd * Math.cos(a), cy + pd * Math.sin(a), pr * 0.5, pr, a, 0, Math.PI * 2);
-        ctx.fill();
+        var a = i/5*Math.PI*2;
+        ctx.beginPath(); ctx.ellipse(cx+pd*Math.cos(a), cy+pd*Math.sin(a), pr*.5, pr, a, 0, Math.PI*2); ctx.fill();
       }
-      ctx.beginPath(); ctx.arc(cx, cy, pr * 0.55, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, pr*.55, 0, Math.PI*2); ctx.fill();
     },
     '💎 钻石': function (ctx, s) {
-      var cx = s / 2, cy = s / 2;
+      var cx = s/2, cy = s/2;
       ctx.beginPath();
-      ctx.moveTo(cx, cy - s * 0.42);
-      ctx.lineTo(cx + s * 0.42, cy - s * 0.1);
-      ctx.lineTo(cx + s * 0.3, cy + s * 0.42);
-      ctx.lineTo(cx - s * 0.3, cy + s * 0.42);
-      ctx.lineTo(cx - s * 0.42, cy - s * 0.1);
-      ctx.closePath(); ctx.fill();
+      ctx.moveTo(cx, cy-s*.42); ctx.lineTo(cx+s*.42, cy-s*.1);
+      ctx.lineTo(cx+s*.3, cy+s*.42); ctx.lineTo(cx-s*.3, cy+s*.42);
+      ctx.lineTo(cx-s*.42, cy-s*.1); ctx.closePath(); ctx.fill();
     },
     '🍄 蘑菇': function (ctx, s) {
-      var cx = s / 2, cy = s * 0.48, r = s * 0.36;
-      ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.lineTo(cx + r, cy); ctx.lineTo(cx - r, cy); ctx.fill();
-      ctx.beginPath(); ctx.rect(cx - r * 0.28, cy, r * 0.56, r * 0.72); ctx.fill();
+      var cx = s/2, cy = s*.48, r = s*.36;
+      ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.lineTo(cx+r,cy); ctx.lineTo(cx-r,cy); ctx.fill();
+      ctx.beginPath(); ctx.rect(cx-r*.28, cy, r*.56, r*.72); ctx.fill();
     }
+  };
+
+  /* ── 每个图案的配色方案 [内/深色, 外/浅色] ──── */
+  var palettes = {
+    '❤️ 爱心': { inner: [176, 0,  32],  outer: [255, 182, 193] },
+    '⭐ 星星': { inner: [184,134,  11], outer: [255, 245, 157] },
+    '🐱 猫咪': { inner: [191, 87,  0],  outer: [255, 213, 171] },
+    '🐰 兔子': { inner: [173,  0, 96],  outer: [252, 200, 222] },
+    '🐶 狗狗': { inner: [109, 63, 18],  outer: [222, 195, 166] },
+    '🐟 小鱼': { inner: [0,   80, 176], outer: [179, 229, 252] },
+    '🌙 月亮': { inner: [48,  18,140],  outer: [200, 180, 255] },
+    '🌸 樱花': { inner: [173,  0, 87],  outer: [255, 192, 218] },
+    '💎 钻石': { inner: [0,  130, 160], outer: [178, 245, 255] },
+    '🍄 蘑菇': { inner: [160,  0,  0],  outer: [255, 200, 130] }
   };
 
   /* ── 采样像素坐标 ─────────────────────────────── */
@@ -111,9 +117,33 @@
     return pts.slice(0, needed);
   }
 
+  /* ── 颜色工具 ─────────────────────────────────── */
+  function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+
+  function colorForPoint(px, py, cx, cy, maxD, palette) {
+    var d = Math.sqrt(Math.pow(px - cx, 2) + Math.pow(py - cy, 2));
+    var t = maxD > 0 ? Math.min(d / maxD, 1) : 0;
+    // 稍微压缩范围，让中心更深、边缘不过淡
+    t = Math.pow(t, 0.7);
+    var r = lerp(palette.inner[0], palette.outer[0], t);
+    var g = lerp(palette.inner[1], palette.outer[1], t);
+    var b = lerp(palette.inner[2], palette.outer[2], t);
+    // 文字色：根据背景亮度自动选黑/白
+    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    var fg = lum > 0.52 ? 'rgba(0,0,0,0.75)' : '#fff';
+    return { bg: 'rgb(' + r + ',' + g + ',' + b + ')', fg: fg };
+  }
+
   /* ── 核心：应用形状 ───────────────────────────── */
   var siteTagsEl, menu, items, current;
   var shapeKeys = Object.keys(shapes);
+
+  function resetColors() {
+    items.forEach(function (li) {
+      var btn = li.querySelector('button');
+      if (btn) { btn.style.backgroundColor = ''; btn.style.borderColor = ''; btn.style.color = ''; }
+    });
+  }
 
   function applyShape(shapeName) {
     var pts = sampleShape(shapes[shapeName], items.length);
@@ -121,18 +151,36 @@
 
     pts.sort(function (a, b) { return a[1] !== b[1] ? a[1] - b[1] : a[0] - b[0]; });
 
+    // 计算质心与最大距离
+    var cx = 0, cy = 0;
+    pts.forEach(function (p) { cx += p[0]; cy += p[1]; });
+    cx /= pts.length; cy /= pts.length;
+    var maxD = 0;
+    pts.forEach(function (p) { maxD = Math.max(maxD, Math.sqrt(Math.pow(p[0]-cx,2)+Math.pow(p[1]-cy,2))); });
+
     var W = siteTagsEl.offsetWidth || 560;
     var H = Math.round(W * 0.65);
+    var palette = palettes[shapeName];
 
-    // ★ 关键修复：is-shaped 加到 .site-tags 上，与 CSS 选择器匹配
     siteTagsEl.classList.add('is-shaped');
     menu.style.height = H + 'px';
 
     items.forEach(function (li, i) {
       li.classList.remove('shape-visible');
-      li.style.left = Math.round(pts[i][0] * W * 0.88 + W * 0.06) + 'px';
-      li.style.top  = Math.round(pts[i][1] * H * 0.88 + H * 0.06) + 'px';
+      var px = pts[i][0], py = pts[i][1];
+      li.style.left = Math.round(px * W * 0.88 + W * 0.06) + 'px';
+      li.style.top  = Math.round(py * H * 0.88 + H * 0.06) + 'px';
       li.style.transform = 'translate(-50%, -50%)';
+
+      // 着色
+      var clr = colorForPoint(px, py, cx, cy, maxD, palette);
+      var btn = li.querySelector('button');
+      if (btn) {
+        btn.style.backgroundColor = clr.bg;
+        btn.style.borderColor = clr.bg;
+        btn.style.color = clr.fg;
+      }
+
       setTimeout(function (el) { el.classList.add('shape-visible'); }, 40 + i * 20, li);
     });
 
@@ -145,39 +193,29 @@
     var others = shapeKeys.filter(function (k) { return k !== current; });
     var next = others[Math.floor(Math.random() * others.length)];
     items.forEach(function (li) { li.classList.remove('shape-visible'); });
-    setTimeout(function () { applyShape(next); }, 380);
+    setTimeout(function () { resetColors(); applyShape(next); }, 380);
   }
 
   function init() {
     siteTagsEl = document.querySelector('.layout--archive .site-tags');
     if (!siteTagsEl) return;
-
     menu  = siteTagsEl.querySelector('.menu');
     if (!menu) return;
     items = Array.from(menu.querySelectorAll('li'));
     if (items.length === 0) return;
 
-    // 插入提示栏
     var hint = document.createElement('div');
     hint.className = 'shape-hint';
     hint.innerHTML = '<span class="shape-name"></span><button class="shape-reshuffle" type="button">换一个 🎲</button>';
     siteTagsEl.insertBefore(hint, menu);
     hint.querySelector('.shape-reshuffle').addEventListener('click', reshuffle);
 
-    // 随机选一个图案
     applyShape(shapeKeys[Math.floor(Math.random() * shapeKeys.length)]);
   }
 
-  // 等 archieve.js 的 Lazyload 回调也跑完再执行，延迟 300ms 确保安全
-  function waitAndInit() {
-    setTimeout(init, 300);
-  }
-
-  if (document.readyState === 'complete') {
-    waitAndInit();
-  } else {
-    window.addEventListener('load', waitAndInit);
-  }
+  function waitAndInit() { setTimeout(init, 300); }
+  if (document.readyState === 'complete') { waitAndInit(); }
+  else { window.addEventListener('load', waitAndInit); }
 })();
 </script>
 <!-- end custom main bottom snippet -->
