@@ -1,0 +1,49 @@
+- name: 美团技术团队
+  url: https://tech.meituan.com/
+  description: 美团技术团队博客，深度工程技术文章
+  avatar: https://p0.meituan.net/travelcube/7ba690e67e38e37e2c86c6d5f9fc6a4f10478.png
+
+- name: 阮一峰的网络日志
+  url: https://www.ruanyifeng.com/blog/
+  description: 阮一峰的个人网站，技术与人文并重
+  avatar: https://www.google.com/s2/favicons?domain=ruanyifeng.com&sz=128
+
+- name: 廖雪峰的官方网站
+  url: https://www.liaoxuefeng.com/
+  description: 深入浅出的 Java、Python、Git 教程，入门必读
+  avatar: https://www.google.com/s2/favicons?domain=liaoxuefeng.com&sz=128
+
+- name: JavaGuide
+  url: https://javaguide.cn/
+  description: 「Java 学习 + 面试指南」，涵盖大部分 Java 知识点
+  avatar: https://www.google.com/s2/favicons?domain=javaguide.cn&sz=128
+
+- name: 小林 coding
+  url: https://xiaolincoding.com/
+  description: 图解计算机网络、OS、MySQL、Redis，通俗易懂
+  avatar: https://www.google.com/s2/favicons?domain=xiaolincoding.com&sz=128
+
+- name: 程序猿 DD
+  url: https://blog.didispace.com/
+  description: Spring Boot / Cloud 系列深度实践，翟永超出品
+  avatar: https://www.google.com/s2/favicons?domain=didispace.com&sz=128
+
+- name: Spring Boot 中文导航
+  url: http://springboot.fun/
+  description: Spring Boot 相关资源汇聚导航
+  avatar: https://www.google.com/s2/favicons?domain=springboot.fun&sz=128
+
+- name: Spring Cloud 中文导航
+  url: http://springcloud.fun/
+  description: Spring Cloud 相关资源汇聚导航
+  avatar: https://www.google.com/s2/favicons?domain=springcloud.fun&sz=128
+
+- name: Java 技术驿站
+  url: http://cmsblogs.com/
+  description: 专注 Java 技术分享
+  avatar: https://www.google.com/s2/favicons?domain=cmsblogs.com&sz=128
+
+- name: 零心的 Blog
+  url: http://lingxinbook.com/
+  description: 个人技术博客
+  avatar: https://www.google.com/s2/favicons?domain=lingxinbook.com&sz=128

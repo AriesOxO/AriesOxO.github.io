@@ -1,0 +1,41 @@
+---
+layout: page
+titles:
+  en: &EN       Memos
+  en-GB: *EN
+  en-US: *EN
+  en-CA: *EN
+  en-AU: *EN
+  zh-Hans: &ZH_HANS  说说
+  zh: *ZH_HANS
+  zh-CN: *ZH_HANS
+  zh-SG: *ZH_HANS
+  zh-Hant: &ZH_HANT 說說
+  zh-TW: *ZH_HANT
+  zh-HK: *ZH_HANT
+---
+
+<div class="memos-page">
+  <p class="memos-desc">碎片想法 · 日常记录 · 随手一记 ✍️</p>
+  <div class="memo-timeline">
+    {% assign memos = site.data.memos %}
+    {% for memo in memos %}
+    <div class="memo-item">
+      <div class="memo-dot"></div>
+      <div class="memo-content">
+        <div class="memo-date">
+          <i class="fas fa-clock"></i> {{ memo.date }}
+        </div>
+        <div class="memo-text">{{ memo.content }}</div>
+        {% if memo.tags %}
+        <div class="memo-tags">
+          {% for tag in memo.tags %}
+          <span class="memo-tag"># {{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

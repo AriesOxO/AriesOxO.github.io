@@ -1,0 +1,33 @@
+- date: 2026-02-28
+  content: 博客完成全面升级优化，新增标签云、说说、打赏等功能。
+  tags:
+    - 博客
+
+- date: 2025-09-24
+  content: 整理了一篇 MySQL Binlog 数据恢复指南，生产环境误删数据真的很心惊胆战 🥲
+  tags:
+    - MySQL
+    - 数据库
+
+- date: 2025-08-21
+  content: 研究了一下 MySQL 重复数据的处理方式，存储过程处理大批量效果不错。
+  tags:
+    - MySQL
+
+- date: 2025-04-15
+  content: 试用了一下 anki-mcp，可以把学习内容自动转成闪卡，对记忆知识点很有帮助！
+  tags:
+    - AI
+    - 工具
+
+- date: 2025-03-05
+  content: MCP 协议出来了，感觉 AI 工具集成的方式要发生很大变化，值得深入研究。
+  tags:
+    - AI
+    - MCP
+
+- date: 2025-02-05
+  content: 本地跑了 DeepSeek R1 模型，8B 的模型效果出乎意料的好，内存占用也比预期低。
+  tags:
+    - AI
+    - DeepSeek

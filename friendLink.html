@@ -1,79 +1,50 @@
 ---
 layout: page
+titles:
+  en: &EN       Friend Links
+  en-GB: *EN
+  en-US: *EN
+  en-CA: *EN
+  en-AU: *EN
+  zh-Hans: &ZH_HANS  友情链接
+  zh: *ZH_HANS
+  zh-CN: *ZH_HANS
+  zh-SG: *ZH_HANS
+  zh-Hant: &ZH_HANT 友情連結
+  zh-TW: *ZH_HANT
+  zh-HK: *ZH_HANT
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>友情链接</title>
-  <style>
-    h1 {
-      text-align: center;
-    }
-    .links-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .link-item {
-      margin: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease-in-out;
-    }
-    .link-item a {
-      text-decoration: none;
-      color: #007BFF;
-      display: block;
-      padding: 15px;
-      border-radius: 8px;
-      transition: background-color 0.3s ease-in-out;
-    }
-    .link-item:hover {
-      transform: translateY(-5px);
-    }
-    .link-item:hover a {
-      background-color: #f0f0f0;
-    }
-    /* 随机生成浅一点的背景颜色 */
-    .link-item {
-      background-color: #e0e0e0; /* 默认颜色 */
-    }
-    /* JavaScript 生成随机颜色 */
+<div class="links-page">
+  <p class="links-desc">汇聚优质博客与技术资源，欢迎交换友链 🔗</p>
+  <div class="links-grid">
+    {% for link in site.data.links %}
+    <a class="link-card" href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+      <div class="link-card__avatar">
+        {% if link.avatar and link.avatar != "" %}
+          <img src="{{ link.avatar }}" alt="{{ link.name }}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="link-card__avatar-fallback" style="display:none">{{ link.name | slice: 0 }}</div>
+        {% else %}
+          <div class="link-card__avatar-fallback">{{ link.name | slice: 0 }}</div>
+        {% endif %}
+      </div>
+      <div class="link-card__info">
+        <div class="link-card__name">{{ link.name }}</div>
+        {% if link.description %}
+        <div class="link-card__desc">{{ link.description }}</div>
+        {% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
 
-  </style>
-</head>
-<body>
-
-<div class="links-container">
-  <div class="link-item"><a href="https://tech.meituan.com/" target="_blank">美团技术团队</a></div>
-  <div class="link-item"><a href="http://www.ruanyifeng.com/blog/" target="_blank">阮一峰的网络日志</a></div>
-  <div class="link-item"><a href="http://springboot.fun/" target="_blank">Spring Boot中文导航</a></div>
-  <div class="link-item"><a href="http://springcloud.fun/" target="_blank">Spring Cloud中文导航</a></div>
-  <div class="link-item"><a href="http://cmsblogs.com/" target="_blank">Java技术驿站</a></div>
-  <div class="link-item"><a href="http://lingxinbook.com/" target="_blank">零心的blog</a></div>
-
-  <!-- 添加更多的友情链接 -->
+  <div class="links-apply">
+    <h3>申请友链</h3>
+    <p>如果你想交换友链，请确保你的博客满足以下条件后，在评论区或通过邮件联系我：</p>
+    <ul>
+      <li>博客有持续更新的原创内容</li>
+      <li>网站能够正常访问</li>
+    </ul>
+    <p>提交格式：网站名称 · 网站地址 · 网站描述 · 头像地址（可选）</p>
+  </div>
 </div>
-<!-- 将 JavaScript 代码放在这里 -->
-<script>
-  function getRandomLightColor() {
-    // 控制 RGB 组件的值在较高范围，确保颜色偏向浅色
-    var r = Math.floor(Math.random() * 100) + 155; // 155 - 255
-    var g = Math.floor(Math.random() * 100) + 155; // 155 - 255
-    var b = Math.floor(Math.random() * 100) + 155; // 155 - 255
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-  }
-  var linkItems = document.querySelectorAll('.link-item');
-  linkItems.forEach(function(item) {
-    item.style.backgroundColor = getRandomLightColor();
-  });
-</script>
-</body>
-</html>
-
-
-
