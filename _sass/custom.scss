@@ -5,7 +5,64 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
-// 0. 归档页标签云样式优化
+// 0. 归档页标签图案动效
+// -----------------------------------------------------------------------------
+
+.site-tags-shape-wrap {
+  position: relative;
+
+  .shape-hint {
+    position: absolute;
+    top: 0.4rem;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--text-color-d);
+    z-index: 10;
+  }
+
+  .shape-name {
+    font-size: 1.1rem;
+  }
+
+  .shape-reshuffle {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.15em 0.6em;
+    font-size: 0.78rem;
+    color: var(--text-color-d);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+  }
+}
+
+// 标签图案容器
+.site-tags.is-shaped .menu {
+  display: block !important;
+  position: relative !important;
+  flex-wrap: unset !important;
+
+  li {
+    position: absolute !important;
+    transition: opacity 0.4s ease, top 0.5s cubic-bezier(.4,0,.2,1), left 0.5s cubic-bezier(.4,0,.2,1) !important;
+    opacity: 0;
+
+    &.shape-visible {
+      opacity: 1 !important;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 0b. 归档页标签云样式优化
 // -----------------------------------------------------------------------------
 
 .layout--archive .site-tags,

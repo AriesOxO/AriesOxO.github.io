@@ -1,3 +1,184 @@
 <!-- start custom main bottom snippet -->
+<script>
+(function () {
+  if (!document.querySelector('.layout--archive')) return;
+  if (window.innerWidth < 600) return;
 
+  var CANVAS_SIZE = 320;
+
+  /* ── 形状绘制函数 ─────────────────────────────── */
+  var shapes = {
+    '❤️ 爱心': function (ctx, s) {
+      ctx.beginPath();
+      var cx = s / 2, cy = s * 0.52, r = s * 0.3;
+      ctx.moveTo(cx, cy + r * 0.9);
+      ctx.bezierCurveTo(cx - r * 1.6, cy + r * 0.3, cx - r * 1.6, cy - r * 0.9, cx, cy - r * 0.3);
+      ctx.bezierCurveTo(cx + r * 1.6, cy - r * 0.9, cx + r * 1.6, cy + r * 0.3, cx, cy + r * 0.9);
+      ctx.fill();
+    },
+    '⭐ 星星': function (ctx, s) {
+      var cx = s / 2, cy = s / 2, ro = s * 0.44, ri = s * 0.18, n = 5;
+      ctx.beginPath();
+      for (var i = 0; i < n * 2; i++) {
+        var a = (i * Math.PI / n) - Math.PI / 2;
+        var r = i % 2 === 0 ? ro : ri;
+        var x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath(); ctx.fill();
+    },
+    '🐱 猫咪': function (ctx, s) {
+      var cx = s / 2, cy = s * 0.58, r = s * 0.32;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      [[cx - r * 0.55, cy - r * 0.75, cx - r * 0.85, cy - r * 1.5, cx - r * 0.15, cy - r * 0.95],
+       [cx + r * 0.55, cy - r * 0.75, cx + r * 0.85, cy - r * 1.5, cx + r * 0.15, cy - r * 0.95]
+      ].forEach(function (e) {
+        ctx.beginPath(); ctx.moveTo(e[0], e[1]); ctx.lineTo(e[2], e[3]); ctx.lineTo(e[4], e[5]); ctx.closePath(); ctx.fill();
+      });
+    },
+    '🐰 兔子': function (ctx, s) {
+      var cx = s / 2, cy = s * 0.65, r = s * 0.27;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx - r * 0.42, cy - r * 1.55, r * 0.14, r * 0.62, -0.18, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx + r * 0.42, cy - r * 1.55, r * 0.14, r * 0.62,  0.18, 0, Math.PI * 2); ctx.fill();
+    },
+    '🐶 狗狗': function (ctx, s) {
+      var cx = s / 2, cy = s * 0.5, r = s * 0.3;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx - r * 0.9, cy + r * 0.15, r * 0.2, r * 0.48, 0.35, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx + r * 0.9, cy + r * 0.15, r * 0.2, r * 0.48, -0.35, 0, Math.PI * 2); ctx.fill();
+    },
+    '🐟 小鱼': function (ctx, s) {
+      var cx = s * 0.43, cy = s / 2, rx = s * 0.33, ry = s * 0.22;
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(cx + rx * 0.75, cy); ctx.lineTo(cx + rx * 1.65, cy - ry * 1.15); ctx.lineTo(cx + rx * 1.65, cy + ry * 1.15); ctx.closePath(); ctx.fill();
+    },
+    '🌙 月亮': function (ctx, s) {
+      var cx = s / 2, cy = s / 2, r = s * 0.4;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath(); ctx.arc(cx + r * 0.42, cy - r * 0.08, r * 0.8, 0, Math.PI * 2); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+    },
+    '🌸 樱花': function (ctx, s) {
+      var cx = s / 2, cy = s / 2, pd = s * 0.22, pr = s * 0.2;
+      for (var i = 0; i < 5; i++) {
+        var a = (i / 5) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.ellipse(cx + pd * Math.cos(a), cy + pd * Math.sin(a), pr * 0.5, pr, a, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.beginPath(); ctx.arc(cx, cy, pr * 0.55, 0, Math.PI * 2); ctx.fill();
+    },
+    '💎 钻石': function (ctx, s) {
+      var cx = s / 2, cy = s / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - s * 0.42);
+      ctx.lineTo(cx + s * 0.42, cy - s * 0.1);
+      ctx.lineTo(cx + s * 0.3, cy + s * 0.42);
+      ctx.lineTo(cx - s * 0.3, cy + s * 0.42);
+      ctx.lineTo(cx - s * 0.42, cy - s * 0.1);
+      ctx.closePath(); ctx.fill();
+    },
+    '🍄 蘑菇': function (ctx, s) {
+      var cx = s / 2, cy = s * 0.48, r = s * 0.36;
+      // 菌盖（半圆）
+      ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.lineTo(cx + r, cy); ctx.lineTo(cx - r, cy); ctx.fill();
+      // 菌柄
+      ctx.beginPath(); ctx.rect(cx - r * 0.28, cy, r * 0.56, r * 0.72); ctx.fill();
+    }
+  };
+
+  /* ── 采样像素坐标 ─────────────────────────────── */
+  function sampleShape(drawFn, needed) {
+    var canvas = document.createElement('canvas');
+    canvas.width = canvas.height = CANVAS_SIZE;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    drawFn(ctx, CANVAS_SIZE);
+    var data = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE).data;
+    var pts = [], step;
+    for (step = 3; step <= 24; step++) {
+      pts = [];
+      for (var y = 0; y < CANVAS_SIZE; y += step)
+        for (var x = 0; x < CANVAS_SIZE; x += step)
+          if (data[(y * CANVAS_SIZE + x) * 4 + 3] > 60)
+            pts.push([x / CANVAS_SIZE, y / CANVAS_SIZE]);
+      if (pts.length >= needed) break;
+    }
+    // shuffle
+    for (var i = pts.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = pts[i]; pts[i] = pts[j]; pts[j] = t;
+    }
+    return pts.slice(0, needed);
+  }
+
+  /* ── 应用形状 ─────────────────────────────────── */
+  var menu, items, wrap;
+
+  function applyShape(shapeName) {
+    var drawFn = shapes[shapeName];
+    var pts = sampleShape(drawFn, items.length);
+    if (pts.length < items.length) return;
+
+    // 排序：从上到下、从左到右，让布局更自然
+    pts.sort(function (a, b) { return a[1] !== b[1] ? a[1] - b[1] : a[0] - b[0]; });
+
+    var W = wrap.offsetWidth || 560;
+    var H = Math.round(W * 0.62);
+    menu.style.height = H + 'px';
+    menu.classList.add('is-shaped');
+
+    items.forEach(function (li, i) {
+      li.classList.remove('shape-visible');
+      var left = Math.round(pts[i][0] * W * 0.88 + W * 0.06);
+      var top  = Math.round(pts[i][1] * H * 0.88 + H * 0.06);
+      li.style.left = left + 'px';
+      li.style.top  = top  + 'px';
+      li.style.transform = 'translate(-50%, -50%)';
+      setTimeout(function (el) { el.classList.add('shape-visible'); }, 30 + i * 18, li);
+    });
+
+    // 更新 emoji 提示
+    var nameEl = wrap.querySelector('.shape-name');
+    if (nameEl) nameEl.textContent = shapeName;
+  }
+
+  function init() {
+    var siteTagsEl = document.querySelector('.layout--archive .site-tags');
+    if (!siteTagsEl) return;
+
+    menu  = siteTagsEl.querySelector('.menu');
+    items = Array.from(menu.querySelectorAll('li'));
+    if (items.length === 0) return;
+
+    // 包一层 wrap 用于定位 hint
+    wrap = siteTagsEl;
+    wrap.classList.add('site-tags-shape-wrap');
+
+    // 加提示 + 换一个按钮
+    var hint = document.createElement('div');
+    hint.className = 'shape-hint';
+    hint.innerHTML = '<span class="shape-name"></span><button class="shape-reshuffle" type="button">换一个 🎲</button>';
+    siteTagsEl.insertBefore(hint, menu);
+
+    var shapeKeys = Object.keys(shapes);
+    var current = shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
+    applyShape(current);
+
+    hint.querySelector('.shape-reshuffle').addEventListener('click', function () {
+      var others = shapeKeys.filter(function (k) { return k !== current; });
+      current = others[Math.floor(Math.random() * others.length)];
+      // 先隐藏再重排
+      items.forEach(function (li) { li.classList.remove('shape-visible'); });
+      setTimeout(function () { applyShape(current); }, 350);
+    });
+  }
+
+  // 等页面渲染完再执行
+  if (document.readyState === 'complete') { init(); }
+  else { window.addEventListener('load', init); }
+})();
+</script>
 <!-- end custom main bottom snippet -->
