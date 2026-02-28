@@ -27,32 +27,6 @@ header:
 
   - titles:
       # @start locale config
-      en      : &EN       Tags
-      en-GB   : *EN
-      en-US   : *EN
-      en-CA   : *EN
-      en-AU   : *EN
-      zh-Hans : &ZH_HANS  标签
-      zh      : *ZH_HANS
-      zh-CN   : *ZH_HANS
-      zh-SG   : *ZH_HANS
-      zh-Hant : &ZH_HANT  標籤
-      zh-TW   : *ZH_HANT
-      zh-HK   : *ZH_HANT
-      ko      : &KO       태그
-      ko-KR   : *KO
-      fr      : &FR       Tags
-      fr-BE   : *FR
-      fr-CA   : *FR
-      fr-CH   : *FR
-      fr-FR   : *FR
-      fr-LU   : *FR
-      tr      : &TR       Etiketler
-      # @end locale config
-    url: /tags.html
-
-  - titles:
-      # @start locale config
       en      : &EN       Memos
       en-GB   : *EN
       en-US   : *EN
