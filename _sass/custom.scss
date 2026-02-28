@@ -5,6 +5,132 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// 0. 归档页标签云样式优化
+// -----------------------------------------------------------------------------
+
+.layout--archive .site-tags,
+.tags-page .site-tags {
+  padding: 1.2rem 0 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+
+  // 去掉默认 menu 样式，改为 flex 包裹
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.4rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    li {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  // 所有标签按钮基础样式重置
+  .tag-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    padding: 0.25em 0.75em;
+    border-radius: 20px;
+    border: 1px solid transparent;
+    font-weight: 400;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+
+    .tag-button__count {
+      font-size: 0.75em;
+      opacity: 0.75;
+      margin-left: 0;
+      vertical-align: baseline;
+      line-height: inherit;
+
+      &::before {
+        content: '(';
+      }
+      &::after {
+        content: ')';
+      }
+    }
+  }
+
+  // "全部" 按钮
+  .tag-button--all {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.3em 1em;
+    border-color: var(--border-color);
+    background: transparent;
+    color: var(--text-color-d);
+    margin-right: 0.4rem;
+
+    &:hover,
+    &.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: #fff;
+    }
+  }
+
+  // 4 个权重级别：字号 + 饱和度递增
+  .tag-button-1 {
+    font-size: 0.78rem;
+
+    &:hover, &.active {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background: transparent;
+    }
+  }
+
+  .tag-button-2 {
+    font-size: 0.85rem;
+
+    &:hover, &.active {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+      background: transparent;
+    }
+  }
+
+  .tag-button-3 {
+    font-size: 0.92rem;
+    font-weight: 500;
+
+    &:hover, &.active {
+      border-color: var(--primary-color);
+      color: #fff;
+      background: var(--primary-color);
+    }
+  }
+
+  .tag-button-4 {
+    font-size: 1rem;
+    font-weight: 600;
+
+    &:hover, &.active {
+      border-color: var(--primary-color);
+      color: #fff;
+      background: var(--primary-color);
+    }
+  }
+
+  // 激活态统一样式（JS 添加的 active class）
+  .tag-button.active {
+    border-color: var(--primary-color) !important;
+    background: var(--primary-color) !important;
+    color: #fff !important;
+  }
+}
+
+// -----------------------------------------------------------------------------
 // 8. 归档页样式优化
 // -----------------------------------------------------------------------------
 
