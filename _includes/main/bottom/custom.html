@@ -6,108 +6,176 @@
 
   var CANVAS_SIZE = 320;
 
-  /* ── 形状绘制 ─────────────────────────────────── */
+  /* ── 部位标记色 & 识别 ──────────────────────────
+     用纯色通道标记不同部位，采样时读回 partId
+  ─────────────────────────────────────────────── */
+  var MARKER = ['#FF0000','#00FF00','#0000FF','#FFFF00','#FF00FF'];
+  function setMarker(ctx, id) { ctx.fillStyle = MARKER[id - 1]; }
+  function detectPart(r, g, b, a) {
+    if (a < 60) return 0;
+    if (r > 180 && g < 80  && b < 80)  return 1; // 红 → 部位1
+    if (r < 80  && g > 180 && b < 80)  return 2; // 绿 → 部位2
+    if (r < 80  && g < 80  && b > 180) return 3; // 蓝 → 部位3
+    if (r > 180 && g > 180 && b < 80)  return 4; // 黄 → 部位4
+    if (r > 180 && g < 80  && b > 180) return 5; // 品 → 部位5
+    return 1; // 边缘抗锯齿混色，归入部位1
+  }
+
+  /* ── 形状绘制（含部位标记）───────────────────── */
   var shapes = {
-    '❤️ 爱心': function (ctx, s) {
-      ctx.beginPath();
-      var cx = s / 2, cy = s * 0.52, r = s * 0.3;
-      ctx.moveTo(cx, cy + r * 0.9);
-      ctx.bezierCurveTo(cx - r * 1.6, cy + r * 0.3, cx - r * 1.6, cy - r * 0.9, cx, cy - r * 0.3);
-      ctx.bezierCurveTo(cx + r * 1.6, cy - r * 0.9, cx + r * 1.6, cy + r * 0.3, cx, cy + r * 0.9);
-      ctx.fill();
+    '❤️ 爱心': {
+      draw: function (ctx, s) {
+        setMarker(ctx, 1);
+        var cx = s/2, cy = s*0.52, r = s*0.3;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + r*0.9);
+        ctx.bezierCurveTo(cx-r*1.6, cy+r*0.3, cx-r*1.6, cy-r*0.9, cx, cy-r*0.3);
+        ctx.bezierCurveTo(cx+r*1.6, cy-r*0.9, cx+r*1.6, cy+r*0.3, cx, cy+r*0.9);
+        ctx.fill();
+      },
+      // 单部位 → 用渐变
+      gradient: { inner:[176,0,32], outer:[255,182,193] }
     },
-    '⭐ 星星': function (ctx, s) {
-      var cx = s / 2, cy = s / 2, ro = s * 0.44, ri = s * 0.18, n = 5;
-      ctx.beginPath();
-      for (var i = 0; i < n * 2; i++) {
-        var a = (i * Math.PI / n) - Math.PI / 2, r = i % 2 === 0 ? ro : ri;
-        i === 0 ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
-                : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
+
+    '⭐ 星星': {
+      draw: function (ctx, s) {
+        setMarker(ctx, 1);
+        var cx=s/2, cy=s/2, ro=s*0.44, ri=s*0.18, n=5;
+        ctx.beginPath();
+        for (var i=0;i<n*2;i++){
+          var a=(i*Math.PI/n)-Math.PI/2, r=i%2===0?ro:ri;
+          i===0?ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a)):ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+        }
+        ctx.closePath(); ctx.fill();
+      },
+      gradient: { inner:[184,134,11], outer:[255,245,157] }
+    },
+
+    '🐱 猫咪': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s*0.6, r=s*0.3;
+        setMarker(ctx,1); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill(); // 脸
+        setMarker(ctx,2); ctx.beginPath(); ctx.moveTo(cx-r*.5,cy-r*.7); ctx.lineTo(cx-r*.85,cy-r*1.5); ctx.lineTo(cx-r*.1,cy-r*.92); ctx.closePath(); ctx.fill(); // 左耳
+        setMarker(ctx,3); ctx.beginPath(); ctx.moveTo(cx+r*.5,cy-r*.7); ctx.lineTo(cx+r*.85,cy-r*1.5); ctx.lineTo(cx+r*.1,cy-r*.92); ctx.closePath(); ctx.fill(); // 右耳
+      },
+      parts: {
+        1: { bg:[255,213,165], fg:'rgba(0,0,0,0.7)' }, // 脸：暖杏
+        2: { bg:[220,88,24],   fg:'#fff' },             // 左耳：深橙
+        3: { bg:[220,88,24],   fg:'#fff' }              // 右耳：深橙
       }
-      ctx.closePath(); ctx.fill();
     },
-    '🐱 猫咪': function (ctx, s) {
-      var cx = s / 2, cy = s * 0.58, r = s * 0.32;
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      [[cx-r*.55,cy-r*.75,cx-r*.85,cy-r*1.5,cx-r*.15,cy-r*.95],
-       [cx+r*.55,cy-r*.75,cx+r*.85,cy-r*1.5,cx+r*.15,cy-r*.95]
-      ].forEach(function(e){ ctx.beginPath(); ctx.moveTo(e[0],e[1]); ctx.lineTo(e[2],e[3]); ctx.lineTo(e[4],e[5]); ctx.closePath(); ctx.fill(); });
-    },
-    '🐰 兔子': function (ctx, s) {
-      var cx = s / 2, cy = s * 0.65, r = s * 0.27;
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx-r*.42, cy-r*1.55, r*.14, r*.62, -0.18, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx+r*.42, cy-r*1.55, r*.14, r*.62,  0.18, 0, Math.PI*2); ctx.fill();
-    },
-    '🐶 狗狗': function (ctx, s) {
-      var cx = s / 2, cy = s * 0.5, r = s * 0.3;
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx-r*.9, cy+r*.15, r*.2, r*.48,  0.35, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(cx+r*.9, cy+r*.15, r*.2, r*.48, -0.35, 0, Math.PI*2); ctx.fill();
-    },
-    '🐟 小鱼': function (ctx, s) {
-      var cx = s*.43, cy = s/2, rx = s*.33, ry = s*.22;
-      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(cx+rx*.75,cy); ctx.lineTo(cx+rx*1.65,cy-ry*1.15); ctx.lineTo(cx+rx*1.65,cy+ry*1.15); ctx.closePath(); ctx.fill();
-    },
-    '🌙 月亮': function (ctx, s) {
-      var cx = s/2, cy = s/2, r = s*.4;
-      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.beginPath(); ctx.arc(cx+r*.42, cy-r*.08, r*.8, 0, Math.PI*2); ctx.fill();
-      ctx.globalCompositeOperation = 'source-over';
-    },
-    '🌸 樱花': function (ctx, s) {
-      var cx = s/2, cy = s/2, pd = s*.22, pr = s*.2;
-      for (var i = 0; i < 5; i++) {
-        var a = i/5*Math.PI*2;
-        ctx.beginPath(); ctx.ellipse(cx+pd*Math.cos(a), cy+pd*Math.sin(a), pr*.5, pr, a, 0, Math.PI*2); ctx.fill();
+
+    '🐰 兔子': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s*0.67, r=s*0.26;
+        setMarker(ctx,1); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill(); // 脸
+        setMarker(ctx,2); ctx.beginPath(); ctx.ellipse(cx-r*.42,cy-r*1.58,r*.13,r*.64,-0.18,0,Math.PI*2); ctx.fill(); // 左耳
+        setMarker(ctx,3); ctx.beginPath(); ctx.ellipse(cx+r*.42,cy-r*1.58,r*.13,r*.64, 0.18,0,Math.PI*2); ctx.fill(); // 右耳
+      },
+      parts: {
+        1: { bg:[255,235,242], fg:'rgba(0,0,0,0.7)' }, // 脸：浅粉白
+        2: { bg:[219,68,120],  fg:'#fff' },             // 左耳：玫粉
+        3: { bg:[219,68,120],  fg:'#fff' }              // 右耳：玫粉
       }
-      ctx.beginPath(); ctx.arc(cx, cy, pr*.55, 0, Math.PI*2); ctx.fill();
     },
-    '💎 钻石': function (ctx, s) {
-      var cx = s/2, cy = s/2;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy-s*.42); ctx.lineTo(cx+s*.42, cy-s*.1);
-      ctx.lineTo(cx+s*.3, cy+s*.42); ctx.lineTo(cx-s*.3, cy+s*.42);
-      ctx.lineTo(cx-s*.42, cy-s*.1); ctx.closePath(); ctx.fill();
+
+    '🐶 狗狗': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s*0.52, r=s*0.29;
+        setMarker(ctx,2); ctx.beginPath(); ctx.ellipse(cx-r*.9,cy+r*.15,r*.21,r*.5, 0.32,0,Math.PI*2); ctx.fill(); // 左耳
+        setMarker(ctx,3); ctx.beginPath(); ctx.ellipse(cx+r*.9,cy+r*.15,r*.21,r*.5,-0.32,0,Math.PI*2); ctx.fill(); // 右耳
+        setMarker(ctx,1); ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill(); // 脸（覆盖耳朵顶部）
+      },
+      parts: {
+        1: { bg:[237,198,148], fg:'rgba(0,0,0,0.7)' }, // 脸：金黄
+        2: { bg:[109,60,18],   fg:'#fff' },             // 左耳：深棕
+        3: { bg:[109,60,18],   fg:'#fff' }              // 右耳：深棕
+      }
     },
-    '🍄 蘑菇': function (ctx, s) {
-      var cx = s/2, cy = s*.48, r = s*.36;
-      ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0); ctx.lineTo(cx+r,cy); ctx.lineTo(cx-r,cy); ctx.fill();
-      ctx.beginPath(); ctx.rect(cx-r*.28, cy, r*.56, r*.72); ctx.fill();
+
+    '🐟 小鱼': {
+      draw: function (ctx, s) {
+        var cx=s*.43, cy=s/2, rx=s*.32, ry=s*.21;
+        setMarker(ctx,2); ctx.beginPath(); ctx.moveTo(cx+rx*.7,cy); ctx.lineTo(cx+rx*1.65,cy-ry*1.1); ctx.lineTo(cx+rx*1.65,cy+ry*1.1); ctx.closePath(); ctx.fill(); // 鱼尾
+        setMarker(ctx,1); ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.fill(); // 鱼身
+      },
+      parts: {
+        1: { bg:[66,165,245],  fg:'#fff' },             // 身：天蓝
+        2: { bg:[13,71,161],   fg:'#fff' }              // 尾：深蓝
+      }
+    },
+
+    '🌙 月亮': {
+      draw: function (ctx, s) {
+        setMarker(ctx,1);
+        var cx=s/2, cy=s/2, r=s*.4;
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+        ctx.globalCompositeOperation='destination-out';
+        ctx.beginPath(); ctx.arc(cx+r*.42,cy-r*.08,r*.8,0,Math.PI*2); ctx.fill();
+        ctx.globalCompositeOperation='source-over';
+      },
+      gradient: { inner:[48,18,140], outer:[186,166,255] }
+    },
+
+    '🌸 樱花': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s/2, pd=s*.22, pr=s*.2;
+        setMarker(ctx,1);
+        for (var i=0;i<5;i++){
+          var a=i/5*Math.PI*2;
+          ctx.beginPath(); ctx.ellipse(cx+pd*Math.cos(a),cy+pd*Math.sin(a),pr*.5,pr,a,0,Math.PI*2); ctx.fill();
+        }
+        setMarker(ctx,2); ctx.beginPath(); ctx.arc(cx,cy,pr*.58,0,Math.PI*2); ctx.fill(); // 花心
+      },
+      parts: {
+        1: { bg:[244,143,177], fg:'rgba(0,0,0,0.7)' }, // 花瓣：樱粉
+        2: { bg:[255,202,40],  fg:'rgba(0,0,0,0.7)' }  // 花心：金黄
+      }
+    },
+
+    '💎 钻石': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s/2;
+        setMarker(ctx,1); // 上部（腰线以上）
+        ctx.beginPath(); ctx.moveTo(cx,cy-s*.42); ctx.lineTo(cx+s*.42,cy-s*.1); ctx.lineTo(cx,cy-s*.02); ctx.lineTo(cx-s*.42,cy-s*.1); ctx.closePath(); ctx.fill();
+        setMarker(ctx,2); // 下部（腰线以下）
+        ctx.beginPath(); ctx.moveTo(cx-s*.42,cy-s*.1); ctx.lineTo(cx+s*.42,cy-s*.1); ctx.lineTo(cx+s*.3,cy+s*.42); ctx.lineTo(cx-s*.3,cy+s*.42); ctx.closePath(); ctx.fill();
+      },
+      parts: {
+        1: { bg:[179,229,252], fg:'rgba(0,0,0,0.7)' }, // 上：冰蓝
+        2: { bg:[0,131,143],   fg:'#fff' }              // 下：深青
+      }
+    },
+
+    '🍄 蘑菇': {
+      draw: function (ctx, s) {
+        var cx=s/2, cy=s*.48, r=s*.36;
+        setMarker(ctx,2); ctx.beginPath(); ctx.rect(cx-r*.28,cy,r*.56,r*.74); ctx.fill(); // 菌柄
+        setMarker(ctx,1); ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,0); ctx.lineTo(cx+r,cy); ctx.lineTo(cx-r,cy); ctx.fill(); // 菌盖
+      },
+      parts: {
+        1: { bg:[229,57,53],   fg:'#fff' },             // 盖：鲜红
+        2: { bg:[255,204,128], fg:'rgba(0,0,0,0.7)' }  // 柄：奶黄
+      }
     }
   };
 
-  /* ── 每个图案的配色方案 [内/深色, 外/浅色] ──── */
-  var palettes = {
-    '❤️ 爱心': { inner: [176, 0,  32],  outer: [255, 182, 193] },
-    '⭐ 星星': { inner: [184,134,  11], outer: [255, 245, 157] },
-    '🐱 猫咪': { inner: [191, 87,  0],  outer: [255, 213, 171] },
-    '🐰 兔子': { inner: [173,  0, 96],  outer: [252, 200, 222] },
-    '🐶 狗狗': { inner: [109, 63, 18],  outer: [222, 195, 166] },
-    '🐟 小鱼': { inner: [0,   80, 176], outer: [179, 229, 252] },
-    '🌙 月亮': { inner: [48,  18,140],  outer: [200, 180, 255] },
-    '🌸 樱花': { inner: [173,  0, 87],  outer: [255, 192, 218] },
-    '💎 钻石': { inner: [0,  130, 160], outer: [178, 245, 255] },
-    '🍄 蘑菇': { inner: [160,  0,  0],  outer: [255, 200, 130] }
-  };
-
-  /* ── 采样像素坐标 ─────────────────────────────── */
+  /* ── 采样（含部位标记）──────────────────────────*/
   function sampleShape(drawFn, needed) {
     var canvas = document.createElement('canvas');
     canvas.width = canvas.height = CANVAS_SIZE;
     var ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
     drawFn(ctx, CANVAS_SIZE);
     var data = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE).data;
     var pts = [], step;
     for (step = 3; step <= 24; step++) {
       pts = [];
       for (var y = 0; y < CANVAS_SIZE; y += step)
-        for (var x = 0; x < CANVAS_SIZE; x += step)
-          if (data[(y * CANVAS_SIZE + x) * 4 + 3] > 60)
-            pts.push([x / CANVAS_SIZE, y / CANVAS_SIZE]);
+        for (var x = 0; x < CANVAS_SIZE; x += step) {
+          var idx = (y * CANVAS_SIZE + x) * 4;
+          var part = detectPart(data[idx], data[idx+1], data[idx+2], data[idx+3]);
+          if (part > 0) pts.push([x / CANVAS_SIZE, y / CANVAS_SIZE, part]);
+        }
       if (pts.length >= needed) break;
     }
     for (var i = pts.length - 1; i > 0; i--) {
@@ -117,71 +185,61 @@
     return pts.slice(0, needed);
   }
 
-  /* ── 颜色工具 ─────────────────────────────────── */
+  /* ── 颜色计算 ─────────────────────────────────── */
   function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
 
-  function colorForPoint(px, py, cx, cy, maxD, palette) {
-    var d = Math.sqrt(Math.pow(px - cx, 2) + Math.pow(py - cy, 2));
-    var t = maxD > 0 ? Math.min(d / maxD, 1) : 0;
-    // 稍微压缩范围，让中心更深、边缘不过淡
-    t = Math.pow(t, 0.7);
-    var r = lerp(palette.inner[0], palette.outer[0], t);
-    var g = lerp(palette.inner[1], palette.outer[1], t);
-    var b = lerp(palette.inner[2], palette.outer[2], t);
-    // 文字色：根据背景亮度自动选黑/白
-    var lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    var fg = lum > 0.52 ? 'rgba(0,0,0,0.75)' : '#fff';
-    return { bg: 'rgb(' + r + ',' + g + ',' + b + ')', fg: fg };
+  function getColor(shape, partId, px, py, cx, cy, maxD) {
+    if (shape.parts) {
+      var c = shape.parts[partId] || shape.parts[1];
+      return c;
+    }
+    // 渐变模式
+    var d = Math.sqrt(Math.pow(px-cx,2)+Math.pow(py-cy,2));
+    var t = Math.pow(maxD > 0 ? Math.min(d/maxD,1) : 0, 0.65);
+    var g = shape.gradient;
+    var r2=lerp(g.inner[0],g.outer[0],t), g2=lerp(g.inner[1],g.outer[1],t), b2=lerp(g.inner[2],g.outer[2],t);
+    var lum=(0.299*r2+0.587*g2+0.114*b2)/255;
+    return { bg:'rgb('+r2+','+g2+','+b2+')', fg: lum>0.52?'rgba(0,0,0,0.75)':'#fff' };
   }
 
-  /* ── 核心：应用形状 ───────────────────────────── */
+  /* ── 核心逻辑 ─────────────────────────────────── */
   var siteTagsEl, menu, items, current;
   var shapeKeys = Object.keys(shapes);
 
   function resetColors() {
-    items.forEach(function (li) {
+    items.forEach(function(li) {
       var btn = li.querySelector('button');
-      if (btn) { btn.style.backgroundColor = ''; btn.style.borderColor = ''; btn.style.color = ''; }
+      if (btn) { btn.style.backgroundColor=''; btn.style.borderColor=''; btn.style.color=''; }
     });
   }
 
   function applyShape(shapeName) {
-    var pts = sampleShape(shapes[shapeName], items.length);
+    var shape = shapes[shapeName];
+    var pts = sampleShape(shape.draw, items.length);
     if (pts.length < items.length) return;
+    pts.sort(function(a,b){ return a[1]!==b[1]?a[1]-b[1]:a[0]-b[0]; });
 
-    pts.sort(function (a, b) { return a[1] !== b[1] ? a[1] - b[1] : a[0] - b[0]; });
-
-    // 计算质心与最大距离
-    var cx = 0, cy = 0;
-    pts.forEach(function (p) { cx += p[0]; cy += p[1]; });
-    cx /= pts.length; cy /= pts.length;
-    var maxD = 0;
-    pts.forEach(function (p) { maxD = Math.max(maxD, Math.sqrt(Math.pow(p[0]-cx,2)+Math.pow(p[1]-cy,2))); });
+    var cx=0, cy=0;
+    pts.forEach(function(p){ cx+=p[0]; cy+=p[1]; });
+    cx/=pts.length; cy/=pts.length;
+    var maxD=0;
+    pts.forEach(function(p){ maxD=Math.max(maxD,Math.sqrt(Math.pow(p[0]-cx,2)+Math.pow(p[1]-cy,2))); });
 
     var W = siteTagsEl.offsetWidth || 560;
     var H = Math.round(W * 0.65);
-    var palette = palettes[shapeName];
-
     siteTagsEl.classList.add('is-shaped');
     menu.style.height = H + 'px';
 
-    items.forEach(function (li, i) {
+    items.forEach(function(li, i) {
       li.classList.remove('shape-visible');
-      var px = pts[i][0], py = pts[i][1];
-      li.style.left = Math.round(px * W * 0.88 + W * 0.06) + 'px';
-      li.style.top  = Math.round(py * H * 0.88 + H * 0.06) + 'px';
-      li.style.transform = 'translate(-50%, -50%)';
-
-      // 着色
-      var clr = colorForPoint(px, py, cx, cy, maxD, palette);
+      var px=pts[i][0], py=pts[i][1], partId=pts[i][2];
+      li.style.left  = Math.round(px*W*0.88+W*0.06)+'px';
+      li.style.top   = Math.round(py*H*0.88+H*0.06)+'px';
+      li.style.transform = 'translate(-50%,-50%)';
+      var clr = getColor(shape, partId, px, py, cx, cy, maxD);
       var btn = li.querySelector('button');
-      if (btn) {
-        btn.style.backgroundColor = clr.bg;
-        btn.style.borderColor = clr.bg;
-        btn.style.color = clr.fg;
-      }
-
-      setTimeout(function (el) { el.classList.add('shape-visible'); }, 40 + i * 20, li);
+      if (btn) { btn.style.backgroundColor=clr.bg; btn.style.borderColor=clr.bg; btn.style.color=clr.fg; }
+      setTimeout(function(el){ el.classList.add('shape-visible'); }, 40+i*20, li);
     });
 
     var nameEl = siteTagsEl.querySelector('.shape-name');
@@ -190,10 +248,10 @@
   }
 
   function reshuffle() {
-    var others = shapeKeys.filter(function (k) { return k !== current; });
-    var next = others[Math.floor(Math.random() * others.length)];
-    items.forEach(function (li) { li.classList.remove('shape-visible'); });
-    setTimeout(function () { resetColors(); applyShape(next); }, 380);
+    var others = shapeKeys.filter(function(k){ return k!==current; });
+    var next = others[Math.floor(Math.random()*others.length)];
+    items.forEach(function(li){ li.classList.remove('shape-visible'); });
+    setTimeout(function(){ resetColors(); applyShape(next); }, 380);
   }
 
   function init() {
@@ -209,12 +267,11 @@
     hint.innerHTML = '<span class="shape-name"></span><button class="shape-reshuffle" type="button">换一个 🎲</button>';
     siteTagsEl.insertBefore(hint, menu);
     hint.querySelector('.shape-reshuffle').addEventListener('click', reshuffle);
-
-    applyShape(shapeKeys[Math.floor(Math.random() * shapeKeys.length)]);
+    applyShape(shapeKeys[Math.floor(Math.random()*shapeKeys.length)]);
   }
 
   function waitAndInit() { setTimeout(init, 300); }
-  if (document.readyState === 'complete') { waitAndInit(); }
+  if (document.readyState==='complete') { waitAndInit(); }
   else { window.addEventListener('load', waitAndInit); }
 })();
 </script>
