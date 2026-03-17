@@ -133,10 +133,4 @@ LLM 的输出格式不完全可控。有时它会在 JSON 外面包一层 markdo
 
 *本文是 piz 开发日志系列的第 1 篇，共 5 篇。*
 
-- **第 1 篇：为什么要做 piz**（本文）
-- [第 2 篇：架构设计与 LLM 抽象层](/2026/03/17/piz-dev-blog-2-architecture/)
-- [第 3 篇：安全体系——三层纵深防御](/2026/03/17/piz-dev-blog-3-security/)
-- [第 4 篇：容错与智能——解析回退与自动修复](/2026/03/17/piz-dev-blog-4-resilience/)
-- [第 5 篇：跨平台工程化实践](/2026/03/17/piz-dev-blog-5-engineering/)
-
-项目地址：[GitHub](https://github.com/AriesOxO/piz) | [crates.io](https://crates.io/crates/piz)
+项目地址：[GitHub](https://github.com/AriesOxO/piz)
