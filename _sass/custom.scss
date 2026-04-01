@@ -716,6 +716,70 @@ pre {
 }
 
 // -----------------------------------------------------------------------------
+// 9a. 首页 Hero Banner
+// -----------------------------------------------------------------------------
+.home-hero {
+  text-align: center;
+  padding: 2.5rem 1.5rem 2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+
+  &__inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__greeting {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: var(--text-color);
+  }
+
+  &__desc {
+    font-size: 0.95rem;
+    color: var(--text-color-d);
+    line-height: 1.7;
+    margin: 0 0 1.2rem;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-hero {
+    padding: 1.5rem 1rem 1.2rem;
+
+    &__greeting {
+      font-size: 1.3rem;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 9b. 关于页技术栈标签
+// -----------------------------------------------------------------------------
+.tech-pill {
+  display: inline-block;
+  padding: 0.3em 0.85em;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: var(--border-color);
+  color: var(--text-color-d);
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: var(--primary-color);
+    color: #fff;
+  }
+}
+
+// -----------------------------------------------------------------------------
 // 9. Footer 布局（左1/4计数器 + 右侧居中信息）
 // -----------------------------------------------------------------------------
 .footer {
