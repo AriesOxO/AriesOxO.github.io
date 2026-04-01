@@ -1,0 +1,53 @@
+---
+layout: page
+titles:
+  en: &EN       Open Source
+  en-GB: *EN
+  en-US: *EN
+  en-CA: *EN
+  en-AU: *EN
+  zh-Hans: &ZH_HANS  开源
+  zh: *ZH_HANS
+  zh-CN: *ZH_HANS
+  zh-SG: *ZH_HANS
+  zh-Hant: &ZH_HANT  開源
+  zh-TW: *ZH_HANT
+  zh-HK: *ZH_HANT
+---
+
+<div class="projects-hero">
+  <h2 class="projects-hero__title">喵呜の开源冒险</h2>
+  <p class="projects-hero__desc">每个项目都是一场副本挑战 · 欢迎组队打 Boss 🐾</p>
+</div>
+
+<div class="projects-grid">
+  {% assign sorted_projects = site.projects | sort: 'order' %}
+  {% for project in sorted_projects %}
+  <a class="project-card" href="{{ project.url }}">
+    <div class="project-card__header">
+      {% if project.icon %}
+      <div class="project-card__icon">
+        <img src="{{ project.icon }}" alt="{{ project.title }}">
+      </div>
+      {% else %}
+      <div class="project-card__icon-fallback" style="background: linear-gradient(135deg, {{ project.color | default: '#2d8cf0' }}, {{ project.color | default: '#2d8cf0' }}99);">
+        {{ project.title | slice: 0 }}
+      </div>
+      {% endif %}
+      <div class="project-card__name">{{ project.title }}</div>
+    </div>
+    <div class="project-card__body">
+      <p class="project-card__tagline">{{ project.tagline }}</p>
+      <div class="project-card__meta">
+        <span class="status-badge status-badge--{{ project.status | default: 'active' }}">{{ project.status | default: 'active' }}</span>
+        {% for tag in project.tags %}
+        <span class="tech-tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="project-card__footer">
+      进入副本
+    </div>
+  </a>
+  {% endfor %}
+</div>

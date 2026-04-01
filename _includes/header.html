@@ -5,24 +5,6 @@
 {%- else -%}
   <header class="header" {%- if include.background -%} style="background: {{ include.background }};" {%- endif -%}>
 {%- endif -%}
-    <style>
-      .img-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 95vh; /* 设置高度为视口的100%，这样图片垂直居中 */
-      }
-      @media screen and (orientation: landscape) {
-        .img-container img {
-          max-width: 75%;
-        }
-      }
-      @media screen and (orientation: portrait) {
-        .img-container img {
-          max-width: 60%;
-        }
-      }
-    </style>
     <div class="main">
       <div class="header__title">
         <div class="header__brand">
@@ -32,9 +14,6 @@
           {%- if site.title -%}
             <a title="{%- if site.description -%}{{ site.description }}{%- endif -%}" href="{{ __return }}">{{ site.title }}</a>
           {%- endif -%}
-          <div class="img-container">
-            <img src="https://moe-counter.glitch.me/get/@:meow">
-          </div>
         </div>
         {%- if site.search.provider -%}
           <button class="button button--secondary button--circle search-button js-search-toggle"><i class="fas fa-search"></i></button>

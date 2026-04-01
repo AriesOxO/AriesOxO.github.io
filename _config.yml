@@ -215,6 +215,22 @@ defaults:
       show_subscribe: true
       pageview: true
 
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: project
+      comment: false
+      sharing: false
+
+
+## => Collections
+##############################
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
 
 ## => Plugins
 ##############################

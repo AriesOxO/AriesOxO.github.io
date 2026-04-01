@@ -27,6 +27,32 @@ header:
 
   - titles:
       # @start locale config
+      en      : &EN       Open Source
+      en-GB   : *EN
+      en-US   : *EN
+      en-CA   : *EN
+      en-AU   : *EN
+      zh-Hans : &ZH_HANS  开源
+      zh      : *ZH_HANS
+      zh-CN   : *ZH_HANS
+      zh-SG   : *ZH_HANS
+      zh-Hant : &ZH_HANT  開源
+      zh-TW   : *ZH_HANT
+      zh-HK   : *ZH_HANT
+      ko      : &KO       오픈소스
+      ko-KR   : *KO
+      fr      : &FR       Open Source
+      fr-BE   : *FR
+      fr-CA   : *FR
+      fr-CH   : *FR
+      fr-FR   : *FR
+      fr-LU   : *FR
+      tr      : &TR       Açık Kaynak
+      # @end locale config
+    url: /projects.html
+
+  - titles:
+      # @start locale config
       en      : &EN       Memos
       en-GB   : *EN
       en-US   : *EN

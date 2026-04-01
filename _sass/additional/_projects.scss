@@ -1,0 +1,435 @@
+// =============================================================================
+// 开源项目 Landing Page 样式
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// 1. 项目详情页 — Hero 区域
+// -----------------------------------------------------------------------------
+.project-hero {
+  position: relative;
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    padding: 3rem 1.5rem;
+  }
+
+  &__icon {
+    margin-bottom: 1.5rem;
+
+    img {
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &__title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  &__tagline {
+    font-size: 1.25rem;
+    opacity: 0.92;
+    margin: 0 0 1.5rem;
+    line-height: 1.6;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .button {
+      backdrop-filter: blur(4px);
+    }
+  }
+}
+
+// 响应式
+@media (max-width: 600px) {
+  .project-hero {
+    min-height: 45vh;
+
+    &__title {
+      font-size: 2rem;
+    }
+
+    &__tagline {
+      font-size: 1rem;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 2. 状态徽章 & 技术标签
+// -----------------------------------------------------------------------------
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.2em 0.7em;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  &--active {
+    background: rgba(82, 196, 26, 0.15);
+    color: #52c41a;
+    &::before { background: #52c41a; }
+  }
+
+  &--maintained {
+    background: rgba(24, 144, 255, 0.15);
+    color: #1890ff;
+    &::before { background: #1890ff; }
+  }
+
+  &--archived {
+    background: rgba(140, 140, 140, 0.15);
+    color: #8c8c8c;
+    &::before { background: #8c8c8c; }
+  }
+}
+
+.tech-tag {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+// 列表页中的标签（非白色背景）
+.project-card .tech-tag {
+  background: var(--border-color);
+  color: var(--text-color-d);
+}
+
+.project-card .status-badge {
+  font-size: 0.72rem;
+}
+
+// -----------------------------------------------------------------------------
+// 3. 通用内区域容器
+// -----------------------------------------------------------------------------
+.project-section__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+// -----------------------------------------------------------------------------
+// 4. Features 特性区域
+// -----------------------------------------------------------------------------
+.project-features {
+  padding: 3.5rem 0;
+  background: var(--background-color);
+}
+
+.project-features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  &__icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--text-color);
+  }
+
+  &__excerpt {
+    font-size: 0.88rem;
+    color: var(--text-color-d);
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 5. Content 正文区域
+// -----------------------------------------------------------------------------
+.project-content {
+  padding: 3rem 0;
+
+  .article__content {
+    line-height: 1.85;
+
+    h2 {
+      margin-top: 2.5rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h2:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 6. Related Posts 相关博文
+// -----------------------------------------------------------------------------
+.project-related {
+  padding: 3rem 0;
+  background: var(--background-color);
+
+  &__title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem;
+    color: var(--text-color);
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: #fff;
+  text-decoration: none !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  &__date {
+    font-size: 0.78rem;
+    color: var(--text-color-d);
+    font-family: monospace;
+  }
+
+  &__title {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text-color);
+    line-height: 1.5;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 7. CTA 底部号召
+// -----------------------------------------------------------------------------
+.project-cta {
+  text-align: center;
+  padding: 3rem 1.5rem;
+
+  &__text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin: 0 0 1.2rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 8. 项目列表入口页
+// -----------------------------------------------------------------------------
+.projects-hero {
+  text-align: center;
+  padding: 3rem 1.5rem 2rem;
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    color: var(--text-color);
+  }
+
+  &__desc {
+    font-size: 1rem;
+    color: var(--text-color-d);
+    margin: 0;
+  }
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  max-width: 960px;
+  margin: 0 auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--background-color);
+  overflow: hidden;
+  text-decoration: none !important;
+  color: var(--text-color) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  &__header {
+    padding: 1.8rem 1.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__icon-fallback {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  &__name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  &__body {
+    padding: 0 1.5rem;
+    flex: 1;
+  }
+
+  &__tagline {
+    font-size: 0.9rem;
+    color: var(--text-color-d);
+    line-height: 1.6;
+    margin: 0 0 1rem;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  &__footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-color-d);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &::after {
+      content: '→';
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &:hover &__footer::after {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 600px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projects-hero__title {
+    font-size: 1.5rem;
+  }
+}
