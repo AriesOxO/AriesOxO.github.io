@@ -1,0 +1,45 @@
+# 摄影作品数据
+# 添加新照片只需在此文件追加条目
+# 字段说明：
+#   src: 图片路径（相对于站点根目录）
+#   title: 标题
+#   date: 拍摄日期
+#   tags: 分类标签（用于筛选）
+#   description: 简短描述（可选）
+
+# 示例条目（替换为真实照片后删除）
+- src: https://picsum.photos/seed/meow1/800/600
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [风景]
+  description: 作品整理中
+
+- src: https://picsum.photos/seed/meow2/600/800
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [日常]
+  description: 作品整理中
+
+- src: https://picsum.photos/seed/meow3/800/500
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [街拍]
+  description: 作品整理中
+
+- src: https://picsum.photos/seed/meow4/700/900
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [风景]
+  description: 作品整理中
+
+- src: https://picsum.photos/seed/meow5/800/600
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [日常]
+  description: 作品整理中
+
+- src: https://picsum.photos/seed/meow6/600/700
+  title: 待添加作品
+  date: 2026-04-01
+  tags: [人像]
+  description: 作品整理中

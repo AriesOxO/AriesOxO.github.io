@@ -1,0 +1,85 @@
+---
+layout: page
+titles:
+  en: &EN       Photography
+  en-GB: *EN
+  en-US: *EN
+  en-CA: *EN
+  en-AU: *EN
+  zh-Hans: &ZH_HANS  摄影
+  zh: *ZH_HANS
+  zh-CN: *ZH_HANS
+  zh-SG: *ZH_HANS
+  zh-Hant: &ZH_HANT  攝影
+  zh-TW: *ZH_HANT
+  zh-HK: *ZH_HANT
+lightbox: true
+---
+
+<div class="photography-page">
+  <p class="photography-desc">用镜头记录世界 📷</p>
+
+  <!-- 标签筛选 -->
+  <div class="photography-filters">
+    {% assign all_tags = "" | split: "" %}
+    {% for photo in site.data.photos %}
+      {% for tag in photo.tags %}
+        {% unless all_tags contains tag %}
+          {% assign all_tags = all_tags | push: tag %}
+        {% endunless %}
+      {% endfor %}
+    {% endfor %}
+    <button class="photo-filter photo-filter--active" data-tag="all">全部</button>
+    {% for tag in all_tags %}
+    <button class="photo-filter" data-tag="{{ tag }}">{{ tag }}</button>
+    {% endfor %}
+  </div>
+
+  <!-- 瀑布流画廊 -->
+  <div class="photography-grid">
+    {% for photo in site.data.photos %}
+    <div class="photo-item" data-tags="{{ photo.tags | join: ',' }}">
+      <a href="{{ photo.src }}" title="{{ photo.title }}">
+        <img src="{{ photo.src }}" alt="{{ photo.title }}" loading="lazy">
+        <div class="photo-item__overlay">
+          <span class="photo-item__title">{{ photo.title }}</span>
+          {% if photo.description %}
+          <span class="photo-item__desc">{{ photo.description }}</span>
+          {% endif %}
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if site.data.photos.size == 0 %}
+  <p style="text-align: center; color: var(--text-color-d); padding: 3rem 0;">作品整理中，敬请期待~</p>
+  {% endif %}
+</div>
+
+<script>
+(function() {
+  var filters = document.querySelectorAll('.photo-filter');
+  var items = document.querySelectorAll('.photo-item');
+
+  filters.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tag = this.getAttribute('data-tag');
+
+      // 切换 active
+      filters.forEach(function(b) { b.classList.remove('photo-filter--active'); });
+      this.classList.add('photo-filter--active');
+
+      // 筛选
+      items.forEach(function(item) {
+        if (tag === 'all') {
+          item.style.display = '';
+        } else {
+          var tags = item.getAttribute('data-tags').split(',');
+          item.style.display = tags.indexOf(tag) >= 0 ? '' : 'none';
+        }
+      });
+    });
+  });
+})();
+</script>

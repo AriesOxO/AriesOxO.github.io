@@ -79,6 +79,32 @@ header:
 
   - titles:
       # @start locale config
+      en      : &EN       Photography
+      en-GB   : *EN
+      en-US   : *EN
+      en-CA   : *EN
+      en-AU   : *EN
+      zh-Hans : &ZH_HANS  摄影
+      zh      : *ZH_HANS
+      zh-CN   : *ZH_HANS
+      zh-SG   : *ZH_HANS
+      zh-Hant : &ZH_HANT  攝影
+      zh-TW   : *ZH_HANT
+      zh-HK   : *ZH_HANT
+      ko      : &KO       사진
+      ko-KR   : *KO
+      fr      : &FR       Photo
+      fr-BE   : *FR
+      fr-CA   : *FR
+      fr-CH   : *FR
+      fr-FR   : *FR
+      fr-LU   : *FR
+      tr      : &TR       Fotoğraf
+      # @end locale config
+    url: /photography.html
+
+  - titles:
+      # @start locale config
       en      : &EN       Memos
       en-GB   : *EN
       en-US   : *EN
