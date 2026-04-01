@@ -70,13 +70,20 @@ lightbox: true
       filters.forEach(function(b) { b.classList.remove('photo-filter--active'); });
       this.classList.add('photo-filter--active');
 
-      // 筛选
+      // 筛选（带淡入淡出动画）
       items.forEach(function(item) {
-        if (tag === 'all') {
+        var show = tag === 'all' || item.getAttribute('data-tags').split(',').indexOf(tag) >= 0;
+        if (show) {
           item.style.display = '';
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(8px)';
+          setTimeout(function() {
+            item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+          }, 20);
         } else {
-          var tags = item.getAttribute('data-tags').split(',');
-          item.style.display = tags.indexOf(tag) >= 0 ? '' : 'none';
+          item.style.display = 'none';
         }
       });
     });

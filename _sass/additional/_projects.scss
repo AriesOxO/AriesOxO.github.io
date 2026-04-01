@@ -539,6 +539,22 @@
 
   .project-doc__main {
     padding: 1.5rem 1.2rem;
+
+    // 移动端代码块和表格防溢出
+    .article__content {
+      pre {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        font-size: 0.82rem !important;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+      }
+    }
   }
 
   .project-related__grid {
