@@ -12,4 +12,5 @@
 
 | 文档 | 状态 | 说明 |
 |------|------|------|
-| [开源项目官网 Landing Page 设计方案](design/open-source-landing-page.md) | 草案 | 为开源项目提供独立官网级 Landing Page 的技术方案与可行性分析 |
+| [博客整体设计方案](design/blog-overall-design.md) | 草案 | 信息架构、7 页面设计、内容分类策略、实施路线图 |
+| [开源项目官网 Landing Page 设计方案](design/open-source-landing-page.md) | 已定型 | 项目 Landing Page + 三栏文档布局的技术方案 |
