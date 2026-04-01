@@ -129,20 +129,39 @@ Valid types: `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `improvement`, `perf
 - `live2dw/` contains the Live2D virtual character widget (model: hijiki)
 
 ### Data Files
-- `_data/navigation.yml` — site navigation menu (includes "开源" entry linking to `/projects.html`)
+- `_data/navigation.yml` — site navigation (7 items: 博客/归档/开源/摄影/说说/关于/友链)
+- `_data/photos.yml` — photography gallery data
+- `_data/memos.yml` — memos/说说 data (supports optional `image` field)
 - `_data/variables.yml` — CDN source URLs for third-party libs
 - `_data/locale.yml` — i18n strings
 - `_data/authors.yml` — author profiles
 
+### Pages
+- `index.html` — home page with Hero Banner + paginated article list
+- `archive.html` — archive with collapsible year sections
+- `projects.html` — open source project listing
+- `photography.html` — photo gallery with masonry layout + tag filter + Lightbox
+- `memos.html` — memos timeline (supports images)
+- `about.md` — personal profile page
+- `friendLink.html` — friend links
+
 ### Footer
 - Left 25%: moe-counter visitor badge (from `count.getloli.com`)
-- Right 75%: author links, copyright, stats (centered)
+- Right 75%: author links, copyright, stats + RSS link (centered)
 - Mobile: stacked vertically
+- Live2D: shrinks on mobile (80×160), hidden on project doc pages mobile
+
+### SEO
+- `url: https://AriesOxO.github.io` — required for correct sitemap/feed/canonical URLs
+- Open Graph + Twitter Card meta tags in `_includes/head.html`
+- `jekyll-sitemap` plugin generates `/sitemap.xml`
+- `jekyll-feed` plugin generates `/feed.xml`
 
 ## Key Configuration (_config.yml)
 
 - `text_skin: forest` — theme skin
 - `highlight_theme: tomorrow-night-blue` — code highlight style
+- `url: https://AriesOxO.github.io` — site URL (critical for SEO)
 - `lang: zh`, `timezone: Asia/Shanghai`
 - `paginate: 8` — posts per page
 - `mathjax: true`, `mermaid: true`, `chart: true` — Markdown enhancements enabled
@@ -157,4 +176,5 @@ GitHub Actions (`.github/workflows/jekyll.yml`) automatically builds and deploys
 ## Design Documents
 
 Design docs are in `docs/` (excluded from Jekyll build via `_config.yml`):
+- `docs/design/blog-overall-design.md` — overall blog design spec (info architecture, 7 pages, roadmap)
 - `docs/design/open-source-landing-page.md` — project Landing Page design spec

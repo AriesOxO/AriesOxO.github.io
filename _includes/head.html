@@ -5,8 +5,39 @@
 {%- include snippets/get-article-title.html article=page -%}
 <title>{%- if __return -%}{{ __return }} - {{ site.title }}{%- else -%}{{ site.title }}{%- endif -%}</title>
 
-<meta name="description" content="{%- if page.excerpt -%}{{ page.excerpt | strip_html | strip_newlines | strip | truncate: 160 }}{%- else -%}{{ site.description }}{%- endif -%}">
-<link rel="canonical" href="{%- include snippets/page-url.html -%}">
+{%- assign _page_desc = page.description | default: page.excerpt | strip_html | strip_newlines | strip | truncate: 160 | default: site.description -%}
+{%- assign _page_title_full = nil -%}
+{%- include snippets/get-article-title.html article=page -%}
+{%- if __return -%}{%- assign _page_title_full = __return | append: ' - ' | append: site.title -%}{%- else -%}{%- assign _page_title_full = site.title -%}{%- endif -%}
+{%- assign _page_url = nil -%}{%- include snippets/page-url.html -%}{%- assign _page_url = __return -%}
+{%- assign _page_image = page.cover | default: site.author.avatar -%}
+
+<meta name="description" content="{{ _page_desc }}">
+<link rel="canonical" href="{{ _page_url }}">
+
+<!-- Open Graph -->
+<meta property="og:title" content="{{ _page_title_full }}">
+<meta property="og:description" content="{{ _page_desc }}">
+<meta property="og:url" content="{{ _page_url }}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:locale" content="zh_CN">
+{%- if page.layout == 'article' or page.layout == 'project' -%}
+<meta property="og:type" content="article">
+{%- if page.date -%}<meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">{%- endif -%}
+{%- else -%}
+<meta property="og:type" content="website">
+{%- endif -%}
+{%- if _page_image -%}
+<meta property="og:image" content="{{ _page_image | absolute_url }}">
+{%- endif -%}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ _page_title_full }}">
+<meta name="twitter:description" content="{{ _page_desc }}">
+{%- if _page_image -%}
+<meta name="twitter:image" content="{{ _page_image | absolute_url }}">
+{%- endif -%}
 
 {%- assign _paths_rss = site.paths.rss | default: site.data.variables.default.paths.rss -%}
 {%- include snippets/get-nav-url.html path=_paths_rss -%}
