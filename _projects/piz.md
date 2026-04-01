@@ -23,6 +23,19 @@ features:
     icon: fas fa-laptop-code
     excerpt: Windows / macOS / Linux 统一体验，Homebrew、Cargo、一键脚本多种安装方式
 related_tag: piz
+nav:
+  - title: 它能做什么？
+    icon: fas fa-terminal
+  - title: 快速安装
+    icon: fas fa-download
+  - title: 核心能力一览
+    icon: fas fa-list
+  - title: 安全机制
+    icon: fas fa-shield-alt
+  - title: 支持的 LLM 供应商
+    icon: fas fa-brain
+  - title: 技术指标
+    icon: fas fa-chart-bar
 ---
 
 ## 它能做什么？

@@ -160,7 +160,6 @@
   backdrop-filter: blur(4px);
 }
 
-// 列表页中的标签（非白色背景）
 .project-card .tech-tag {
   background: var(--border-color);
   color: var(--text-color-d);
@@ -171,49 +170,12 @@
 }
 
 // -----------------------------------------------------------------------------
-// 3. 通用内区域容器
+// 3. 通用容器
 // -----------------------------------------------------------------------------
 .project-section__inner {
   max-width: 960px;
   margin: 0 auto;
   padding: 0 1.5rem;
-
-  &--wide {
-    max-width: 1200px;
-  }
-}
-
-// -----------------------------------------------------------------------------
-// 3b. Content + TOC 双栏布局
-// -----------------------------------------------------------------------------
-.project-body {
-  display: flex;
-  gap: 2rem;
-
-  &__main {
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__aside {
-    flex: 0 0 200px;
-    position: relative;
-
-    .page__aside {
-      position: sticky;
-      top: 1rem;
-    }
-
-    .toc-aside {
-      font-size: 0.82rem;
-    }
-  }
-}
-
-@media (max-width: 1024px) {
-  .project-body__aside {
-    display: none;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -289,12 +251,115 @@
   }
 }
 
-// -----------------------------------------------------------------------------
-// 6. Content 正文区域
-// -----------------------------------------------------------------------------
-.project-content {
-  padding: 3.5rem 0;
+// =============================================================================
+// 6. 三栏文档布局
+// =============================================================================
+.project-doc {
   background: #fff;
+  border-top: 1px solid #e8ecf0;
+  position: relative;
+}
+
+// 移动端导航切换按钮
+.project-doc__nav-toggle {
+  display: none;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-bottom: 1px solid #e8ecf0;
+  background: #f8fafb;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+
+  i {
+    margin-right: 0.5rem;
+  }
+}
+
+// 三栏 flex 容器
+.project-doc__layout {
+  display: flex;
+  max-width: 1300px;
+  margin: 0 auto;
+  min-height: 60vh;
+}
+
+// --- 左侧文档导航 ---
+.project-doc__nav {
+  flex: 0 0 220px;
+  border-right: 1px solid #e8ecf0;
+  background: #f8fafb;
+}
+
+.project-doc__nav-inner {
+  position: sticky;
+  top: 0;
+  padding: 1.5rem 0;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.project-doc__nav-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-d);
+  padding: 0 1.2rem;
+  margin: 0 0 0.8rem;
+}
+
+.doc-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.88rem;
+      color: var(--text-color-d);
+      text-decoration: none !important;
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+
+      i {
+        width: 1.2em;
+        text-align: center;
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      &:hover {
+        color: var(--text-color);
+        background: rgba(0, 0, 0, 0.03);
+      }
+    }
+
+    &--active > a {
+      color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      background: rgba(0, 0, 0, 0.03);
+      font-weight: 500;
+
+      i {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// --- 中间正文 ---
+.project-doc__main {
+  flex: 1;
+  min-width: 0;
+  padding: 2.5rem 3rem;
 
   .article__content {
     line-height: 1.85;
@@ -313,7 +378,6 @@
       margin-top: 0;
     }
 
-    // 表格样式优化
     table {
       width: 100%;
       border-collapse: collapse;
@@ -340,27 +404,21 @@
   }
 }
 
-// -----------------------------------------------------------------------------
-// 7. Related Posts 相关博文
-// -----------------------------------------------------------------------------
-.project-related {
-  padding: 3.5rem 0;
-  background: #f5f7f9;
+// 相关博文（嵌入正文底部）
+.project-related-inline {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e8ecf0;
 
-  &__title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 1.5rem;
-    padding-left: 0.8rem;
-    border-left: 4px solid var(--primary-color);
-    color: var(--text-color);
+  h2 {
+    margin-top: 0 !important;
   }
+}
 
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
+.project-related__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
 }
 
 .related-card {
@@ -393,8 +451,103 @@
   }
 }
 
+// --- 右侧目录 ---
+.project-doc__toc {
+  flex: 0 0 200px;
+  border-left: 1px solid #e8ecf0;
+}
+
+.project-doc__toc-inner {
+  position: sticky;
+  top: 0;
+  padding: 1.5rem 1rem;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.project-doc__toc-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color-d);
+  margin: 0 0 0.8rem;
+}
+
+.doc-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    a {
+      display: block;
+      padding: 0.3rem 0;
+      font-size: 0.8rem;
+      color: var(--text-color-d);
+      text-decoration: none !important;
+      line-height: 1.5;
+      border-left: 2px solid transparent;
+      padding-left: 0.6rem;
+      transition: all 0.15s ease;
+
+      &:hover {
+        color: var(--text-color);
+      }
+    }
+
+    &--active > a {
+      color: var(--primary-color);
+      border-left-color: var(--primary-color);
+    }
+  }
+}
+
+// --- 响应式 ---
+
+// 中屏：隐藏右侧目录
+@media (max-width: 1200px) {
+  .project-doc__toc {
+    display: none;
+  }
+
+  .project-doc__main {
+    padding: 2rem 2rem;
+  }
+}
+
+// 小屏：隐藏左导航，显示切换按钮
+@media (max-width: 768px) {
+  .project-doc__nav-toggle {
+    display: block;
+  }
+
+  .project-doc__nav {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100%;
+    z-index: 10;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+
+    &--open {
+      display: block;
+    }
+  }
+
+  .project-doc__main {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .project-related__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 // -----------------------------------------------------------------------------
-// 8. CTA 底部号召
+// 7. CTA 底部号召
 // -----------------------------------------------------------------------------
 .project-cta {
   text-align: center;
@@ -410,7 +563,7 @@
 }
 
 // -----------------------------------------------------------------------------
-// 9. 项目列表入口页
+// 8. 项目列表入口页
 // -----------------------------------------------------------------------------
 .projects-hero {
   text-align: center;
@@ -432,7 +585,6 @@
   padding: 0 1.5rem;
 }
 
-// 单项目居中
 .projects-grid:only-child {
   justify-items: center;
 }

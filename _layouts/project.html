@@ -53,44 +53,69 @@ layout: base
 </section>
 {% endif %}
 
-<!-- Content + TOC -->
+<!-- 三栏文档区域 -->
 {% if content != "" %}
-<section class="project-content">
-  <div class="project-section__inner project-section__inner--wide">
-    <div class="project-body js-page-root">
-      <div class="project-body__main">
-        <div class="article__content js-article-content">
-          {{ content }}
-        </div>
+<section class="project-doc">
+  <!-- 移动端导航按钮 -->
+  <button class="project-doc__nav-toggle d-print-none js-doc-nav-toggle">
+    <i class="fas fa-bars"></i> 文档导航
+  </button>
+
+  <div class="project-doc__layout">
+    <!-- 左侧：文档导航（H2 章节） -->
+    <nav class="project-doc__nav d-print-none js-doc-nav">
+      <div class="project-doc__nav-inner">
+        <h3 class="project-doc__nav-title">文档导航</h3>
+        <ul class="doc-nav-list js-doc-nav-list">
+          {% if page.nav %}
+            {% for item in page.nav %}
+            <li class="doc-nav-list__item">
+              <a href="#" data-section="{{ item.title }}">
+                {% if item.icon %}<i class="{{ item.icon }}"></i>{% endif %}
+                <span>{{ item.title }}</span>
+              </a>
+            </li>
+            {% endfor %}
+          {% endif %}
+          <!-- JS 会自动填充（如果 nav 未定义或为空） -->
+        </ul>
       </div>
-      <div class="project-body__aside col-aside d-print-none js-col-aside">
-        <aside class="page__aside js-page-aside">
-          {%- include aside/toc.html -%}
-        </aside>
+    </nav>
+
+    <!-- 中间：文档正文 -->
+    <div class="project-doc__main">
+      <div class="article__content js-article-content">
+        {{ content }}
+      </div>
+
+      <!-- Related Posts -->
+      {% if page.related_tag %}
+        {% assign related = site.posts | where_exp: "post", "post.tags contains page.related_tag" %}
+        {% if related.size > 0 %}
+        <div class="project-related-inline">
+          <h2>相关博文</h2>
+          <div class="project-related__grid">
+            {% for post in related limit:6 %}
+            <a href="{{ post.url }}" class="related-card">
+              <span class="related-card__date">{{ post.date | date: "%Y-%m-%d" }}</span>
+              <span class="related-card__title">{{ post.title }}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <!-- 右侧：页内子目录（仅 H3） -->
+    <div class="project-doc__toc d-print-none">
+      <div class="project-doc__toc-inner">
+        <h3 class="project-doc__toc-title">本节目录</h3>
+        <ul class="doc-toc-list js-doc-toc-list"></ul>
       </div>
     </div>
   </div>
 </section>
-{% endif %}
-
-<!-- Related Posts -->
-{% if page.related_tag %}
-  {% assign related = site.posts | where_exp: "post", "post.tags contains page.related_tag" %}
-  {% if related.size > 0 %}
-  <section class="project-related">
-    <div class="project-section__inner">
-      <h2 class="project-related__title">相关博文</h2>
-      <div class="project-related__grid">
-        {% for post in related limit:6 %}
-        <a href="{{ post.url }}" class="related-card">
-          <span class="related-card__date">{{ post.date | date: "%Y-%m-%d" }}</span>
-          <span class="related-card__title">{{ post.title }}</span>
-        </a>
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-  {% endif %}
 {% endif %}
 
 <!-- CTA -->
@@ -109,30 +134,137 @@ layout: base
 
 <script>
   {%- include scripts/lib/scroll-to.js -%}
-  {%- include scripts/lib/affix.js -%}
-  {%- include scripts/lib/toc.js -%}
-  {%- include scripts/aside/toc.js -%}
-  {%- include scripts/aside/affix.js -%}
   {%- include scripts/common.js -%}
 </script>
 
-<!-- 自动获取 GitHub 最新版本号 -->
 <script>
 (function() {
-  var el = document.querySelector('.js-project-version');
-  if (!el) return;
-  var repo = el.getAttribute('data-repo') || '';
-  var match = repo.match(/github\.com\/([^\/]+\/[^\/]+)/);
-  if (!match) return;
-  var apiUrl = 'https://api.github.com/repos/' + match[1] + '/releases/latest';
-  fetch(apiUrl)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.tag_name) {
-        el.textContent = data.tag_name;
-        el.style.display = 'inline-block';
+  /* --- GitHub 版本号自动获取 --- */
+  var versionEl = document.querySelector('.js-project-version');
+  if (versionEl) {
+    var repo = versionEl.getAttribute('data-repo') || '';
+    var match = repo.match(/github\.com\/([^\/]+\/[^\/]+)/);
+    if (match) {
+      fetch('https://api.github.com/repos/' + match[1] + '/releases/latest')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.tag_name) {
+            versionEl.textContent = data.tag_name;
+            versionEl.style.display = 'inline-block';
+          }
+        })
+        .catch(function() {});
+    }
+  }
+
+  /* --- 右侧子目录：从 H3 生成 --- */
+  var tocList = document.querySelector('.js-doc-toc-list');
+  var content = document.querySelector('.js-article-content');
+  if (tocList && content) {
+    var h3s = content.querySelectorAll('h3');
+    h3s.forEach(function(h3) {
+      var li = document.createElement('li');
+      li.className = 'doc-toc-list__item';
+      var a = document.createElement('a');
+      a.href = '#' + h3.id;
+      a.textContent = h3.textContent.replace(/^#\s*/, '');
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+
+    // 右侧 TOC 高亮
+    var h3Array = Array.prototype.slice.call(h3s);
+    var tocLinks = tocList.querySelectorAll('a');
+    function updateTocActive() {
+      var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      var current = null;
+      for (var i = h3Array.length - 1; i >= 0; i--) {
+        if (h3Array[i].offsetTop - 120 <= scrollTop) {
+          current = h3Array[i].id;
+          break;
+        }
       }
-    })
-    .catch(function() {});
+      tocLinks.forEach(function(link) {
+        if (link.getAttribute('href') === '#' + current) {
+          link.parentElement.classList.add('doc-toc-list__item--active');
+        } else {
+          link.parentElement.classList.remove('doc-toc-list__item--active');
+        }
+      });
+    }
+    window.addEventListener('scroll', window.throttle(updateTocActive, 100));
+    updateTocActive();
+  }
+
+  /* --- 左侧文档导航：从 H2 自动生成（如果 front matter 未定义 nav） --- */
+  var navList = document.querySelector('.js-doc-nav-list');
+  if (!navList || !content) return;
+
+  var h2s = content.querySelectorAll('h2');
+  // 如果 nav 列表为空（front matter 未定义），自动从 H2 生成
+  if (navList.children.length === 0 && h2s.length > 0) {
+    h2s.forEach(function(h2) {
+      var li = document.createElement('li');
+      li.className = 'doc-nav-list__item';
+      var a = document.createElement('a');
+      a.href = '#' + h2.id;
+      a.innerHTML = '<span>' + h2.textContent.replace(/^#\s*/, '') + '</span>';
+      li.appendChild(a);
+      navList.appendChild(li);
+    });
+  }
+
+  // front matter 定义了 nav 的情况：匹配 data-section 到 H2 的 id
+  var navLinks = navList.querySelectorAll('a[data-section]');
+  navLinks.forEach(function(link) {
+    var sectionTitle = link.getAttribute('data-section');
+    for (var i = 0; i < h2s.length; i++) {
+      if (h2s[i].textContent.replace(/^#\s*/, '').trim() === sectionTitle.trim()) {
+        link.href = '#' + h2s[i].id;
+        break;
+      }
+    }
+  });
+
+  /* --- 左导航高亮当前章节 --- */
+  var allNavLinks = navList.querySelectorAll('a');
+  var h2Array = Array.prototype.slice.call(h2s);
+
+  function updateActiveNav() {
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    var current = null;
+    for (var i = h2Array.length - 1; i >= 0; i--) {
+      if (h2Array[i].offsetTop - 100 <= scrollTop) {
+        current = h2Array[i].id;
+        break;
+      }
+    }
+    allNavLinks.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (href === '#' + current) {
+        link.parentElement.classList.add('doc-nav-list__item--active');
+      } else {
+        link.parentElement.classList.remove('doc-nav-list__item--active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', window.throttle(updateActiveNav, 100));
+  updateActiveNav();
+
+  /* --- 移动端导航切换 --- */
+  var toggleBtn = document.querySelector('.js-doc-nav-toggle');
+  var nav = document.querySelector('.js-doc-nav');
+  if (toggleBtn && nav) {
+    toggleBtn.addEventListener('click', function() {
+      nav.classList.toggle('project-doc__nav--open');
+    });
+    // 点击导航项后关闭
+    nav.addEventListener('click', function(e) {
+      if (e.target.closest('a')) {
+        nav.classList.remove('project-doc__nav--open');
+      }
+    });
+  }
 })();
 </script>

@@ -23,6 +23,23 @@ features:
     icon: fas fa-desktop
     excerpt: 深色主题、实时监控、响应式布局，支持密码认证
 related_tag: fnos-fan-control
+nav:
+  - title: 解决什么问题？
+    icon: fas fa-question-circle
+  - title: 下载安装
+    icon: fas fa-download
+  - title: 使用教程
+    icon: fas fa-book
+  - title: 安全机制
+    icon: fas fa-shield-alt
+  - title: 兼容性
+    icon: fas fa-microchip
+  - title: REST API
+    icon: fas fa-plug
+  - title: 更新日志
+    icon: fas fa-history
+  - title: 技术指标
+    icon: fas fa-chart-bar
 ---
 
 ## 解决什么问题？
