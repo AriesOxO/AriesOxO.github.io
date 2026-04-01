@@ -4,7 +4,7 @@ layout: base
 {%- include header.html -%}
 
 <!-- Hero -->
-<section class="project-hero" style="background: linear-gradient(135deg, {{ page.color | default: '#2d8cf0' }}, {{ page.color | default: '#2d8cf0' }}cc, #1a1a2e);">
+<section class="project-hero" style="background: linear-gradient(135deg, {{ page.color | default: '#2d8cf0' }} 0%, {{ page.color | default: '#2d8cf0' }}bb 40%, #2a2a3e 100%);">
   <div class="project-hero__content">
     {% if page.icon %}
     <div class="project-hero__icon">
@@ -12,6 +12,9 @@ layout: base
     </div>
     {% endif %}
     <h1 class="project-hero__title">{{ page.title }}</h1>
+    {% if page.version %}
+    <span class="project-hero__version">{{ page.version }}</span>
+    {% endif %}
     <p class="project-hero__tagline">{{ page.tagline }}</p>
     <div class="project-hero__meta">
       <span class="status-badge status-badge--{{ page.status | default: 'active' }}">{{ page.status | default: 'active' }}</span>
@@ -26,12 +29,6 @@ layout: base
         GitHub
       </a>
       {% endif %}
-      {% if page.demo %}
-      <a href="{{ page.demo }}" target="_blank" rel="noopener" class="button button--info button--pill button--lg">
-        <svg style="width:1em;height:1em;vertical-align:-0.15em;margin-right:0.4em;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        在线演示
-      </a>
-      {% endif %}
     </div>
   </div>
 </section>
@@ -40,6 +37,7 @@ layout: base
 {% if page.features and page.features.size > 0 %}
 <section class="project-features">
   <div class="project-section__inner">
+    <h2 class="project-section-title">核心特性</h2>
     <div class="project-features__grid">
       {% for feature in page.features %}
       <div class="feature-card">
@@ -88,7 +86,7 @@ layout: base
 
 <!-- CTA -->
 {% if page.repo %}
-<section class="project-cta" style="background: linear-gradient(135deg, {{ page.color | default: '#2d8cf0' }}22, {{ page.color | default: '#2d8cf0' }}11);">
+<section class="project-cta" style="border-top: 3px solid {{ page.color | default: '#2d8cf0' }}33;">
   <p class="project-cta__text">觉得还不错？点个 Star 就是最好的打 call 喵~ 🐱</p>
   <a href="{{ page.repo }}" target="_blank" rel="noopener" class="button button--primary button--pill button--xl">
     ⭐ Star on GitHub

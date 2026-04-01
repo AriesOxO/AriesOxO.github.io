@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 .project-hero {
   position: relative;
-  min-height: 55vh;
+  min-height: 50vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,42 +19,55 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.25);
     z-index: 1;
   }
 
   &__content {
     position: relative;
     z-index: 2;
-    max-width: 720px;
-    padding: 3rem 1.5rem;
+    max-width: 760px;
+    padding: 3.5rem 1.5rem;
   }
 
   &__icon {
     margin-bottom: 1.5rem;
 
     img {
-      width: 80px;
-      height: 80px;
-      border-radius: 16px;
+      width: 88px;
+      height: 88px;
+      border-radius: 20px;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
     }
   }
 
   &__title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem;
-    letter-spacing: -0.02em;
+    font-size: 4rem;
+    font-weight: 800;
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.03em;
     color: #fff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+  }
+
+  &__version {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.15em 0.6em;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(4px);
+    margin-bottom: 1rem;
+    vertical-align: middle;
   }
 
   &__tagline {
-    font-size: 1.25rem;
-    opacity: 0.92;
-    margin: 0 0 1.5rem;
-    line-height: 1.6;
+    font-size: 1.2rem;
+    opacity: 0.93;
+    margin: 0.8rem 0 1.8rem;
+    line-height: 1.7;
   }
 
   &__meta {
@@ -79,17 +92,20 @@
   }
 }
 
-// 响应式
 @media (max-width: 600px) {
   .project-hero {
-    min-height: 45vh;
+    min-height: 40vh;
 
     &__title {
-      font-size: 2rem;
+      font-size: 2.5rem;
     }
 
     &__tagline {
       font-size: 1rem;
+    }
+
+    &__content {
+      padding: 2.5rem 1.2rem;
     }
   }
 }
@@ -164,24 +180,38 @@
 }
 
 // -----------------------------------------------------------------------------
-// 4. Features 特性区域
+// 4. 区域标题装饰
+// -----------------------------------------------------------------------------
+.project-section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 2rem;
+  padding-left: 0.8rem;
+  border-left: 4px solid var(--primary-color);
+  color: var(--text-color);
+}
+
+// -----------------------------------------------------------------------------
+// 5. Features 特性区域
 // -----------------------------------------------------------------------------
 .project-features {
-  padding: 3.5rem 0;
-  background: var(--background-color);
+  padding: 4rem 0;
+  background: #f5f7f9;
 }
 
 .project-features__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .feature-card {
   text-align: center;
   padding: 2rem 1.5rem;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e8ecf0;
   background: #fff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
@@ -191,8 +221,20 @@
   }
 
   &__icon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: currentColor;
+
+    i {
+      color: #fff;
+      font-size: 1.3rem;
+    }
   }
 
   &__title {
@@ -203,45 +245,77 @@
   }
 
   &__excerpt {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     color: var(--text-color-d);
-    line-height: 1.6;
+    line-height: 1.65;
     margin: 0;
   }
 }
 
 // -----------------------------------------------------------------------------
-// 5. Content 正文区域
+// 6. Content 正文区域
 // -----------------------------------------------------------------------------
 .project-content {
-  padding: 3rem 0;
+  padding: 3.5rem 0;
+  background: #fff;
 
   .article__content {
     line-height: 1.85;
 
     h2 {
-      margin-top: 2.5rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border-color);
+      margin-top: 3rem;
+      padding-bottom: 0.5rem;
+      padding-left: 0.8rem;
+      border-bottom: none;
+      border-left: 4px solid var(--primary-color);
+      font-size: 1.35rem;
+      font-weight: 700;
     }
 
     h2:first-child {
       margin-top: 0;
     }
+
+    // 表格样式优化
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+
+      th {
+        background: #f5f7f9;
+        font-weight: 600;
+        text-align: left;
+        padding: 0.6rem 1rem;
+        border-bottom: 2px solid #e8ecf0;
+      }
+
+      td {
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid #f0f2f5;
+      }
+
+      tr:hover td {
+        background: #fafbfc;
+      }
+    }
   }
 }
 
 // -----------------------------------------------------------------------------
-// 6. Related Posts 相关博文
+// 7. Related Posts 相关博文
 // -----------------------------------------------------------------------------
 .project-related {
-  padding: 3rem 0;
-  background: var(--background-color);
+  padding: 3.5rem 0;
+  background: #f5f7f9;
 
   &__title {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-weight: 700;
     margin: 0 0 1.5rem;
+    padding-left: 0.8rem;
+    border-left: 4px solid var(--primary-color);
     color: var(--text-color);
   }
 
@@ -258,7 +332,7 @@
   gap: 0.3rem;
   padding: 1rem 1.2rem;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e8ecf0;
   background: #fff;
   text-decoration: none !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -283,32 +357,27 @@
 }
 
 // -----------------------------------------------------------------------------
-// 7. CTA 底部号召
+// 8. CTA 底部号召
 // -----------------------------------------------------------------------------
 .project-cta {
   text-align: center;
-  padding: 3rem 1.5rem;
+  padding: 3.5rem 1.5rem;
+  background: #fff;
 
   &__text {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--text-color);
     margin: 0 0 1.2rem;
+    font-weight: 500;
   }
 }
 
 // -----------------------------------------------------------------------------
-// 8. 项目列表入口页
+// 9. 项目列表入口页
 // -----------------------------------------------------------------------------
 .projects-hero {
   text-align: center;
-  padding: 3rem 1.5rem 2rem;
-
-  &__title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem;
-    color: var(--text-color);
-  }
+  padding: 1rem 1.5rem 2.5rem;
 
   &__desc {
     font-size: 1rem;
@@ -326,6 +395,11 @@
   padding: 0 1.5rem;
 }
 
+// 单项目居中
+.projects-grid:only-child {
+  justify-items: center;
+}
+
 .project-card {
   display: flex;
   flex-direction: column;
@@ -336,6 +410,7 @@
   text-decoration: none !important;
   color: var(--text-color) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  max-width: 480px;
 
   &:hover {
     transform: translateY(-4px);
@@ -429,7 +504,7 @@
     grid-template-columns: 1fr;
   }
 
-  .projects-hero__title {
-    font-size: 1.5rem;
+  .project-card {
+    max-width: none;
   }
 }

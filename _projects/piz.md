@@ -1,72 +1,114 @@
 ---
 layout: project
-title: PIZ
-tagline: "基于 Spring Boot 的快速开发脚手架，开箱即用的企业级基础框架"
-description: "PIZ 是一个基于 Spring Boot 的快速开发脚手架，提供权限管理、代码生成、常用工具封装等企业级开发基础能力。"
+title: piz
+tagline: "用自然语言操控终端的智能命令助手 — 告别死记硬背，描述即执行"
+description: "piz 是一款 Rust 编写的 CLI 工具，将自然语言翻译为 Shell 命令。支持多 LLM 后端、三层安全防护、本地缓存、命令纠错、交互式对话，跨平台开箱即用。"
 repo: https://github.com/AriesOxO/piz
-demo: ""
 status: active
-tags: [Java, Spring Boot, MyBatis]
-color: "#2d8cf0"
+version: v0.3.2
+tags: [Rust, CLI, AI, LLM]
+color: "#e8590c"
 order: 1
 features:
-  - title: 开箱即用
-    icon: fas fa-rocket
-    excerpt: 集成常用组件，创建即可运行，快速启动新项目
-  - title: 权限管理
+  - title: 自然语言驱动
+    icon: fas fa-magic
+    excerpt: 用日常语言描述需求，自动生成适配当前系统和 Shell 的精确命令
+  - title: 三层安全防护
     icon: fas fa-shield-alt
-    excerpt: 内置 RBAC 权限模型，灵活控制菜单和接口访问
-  - title: 代码生成
-    icon: fas fa-code
-    excerpt: 一键生成 CRUD 代码，减少重复劳动，专注业务逻辑
+    excerpt: Prompt 拒绝 + 注入检测（12 种攻击模式）+ 危险分级，杜绝恶意命令执行
+  - title: 多 LLM 后端
+    icon: fas fa-brain
+    excerpt: 支持 OpenAI、Claude、Gemini、Ollama + 12 个兼容供应商，一键切换
+  - title: 跨平台开箱即用
+    icon: fas fa-laptop-code
+    excerpt: Windows / macOS / Linux 统一体验，Homebrew、Cargo、一键脚本多种安装方式
 related_tag: piz
 ---
 
-## 快速开始
+## 它能做什么？
 
 ```bash
-# 克隆项目
-git clone https://github.com/AriesOxO/piz.git
+$ piz 查看磁盘使用情况
+  ➜ df -h
+  [Y] 执行  [n] 取消  [e] 编辑
 
-# 进入项目目录
-cd piz
+$ piz 找出所有大于100M的文件
+  ➜ find . -size +100M -type f
 
-# 安装依赖并启动
-mvn clean install
-mvn spring-boot:run
+$ piz 查看3000端口被谁占用
+  ➜ lsof -i :3000
 ```
 
-## 技术栈
+你只需要说"想做什么"，piz 负责翻译成"怎么做"。
 
-| 技术 | 说明 |
+## 快速安装
+
+**Homebrew（macOS / Linux）：**
+
+```bash
+brew install AriesOxO/tap/piz
+```
+
+**一键安装脚本：**
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/AriesOxO/piz/main/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://raw.githubusercontent.com/AriesOxO/piz/main/install.ps1 | iex
+```
+
+**Cargo（全平台）：**
+
+```bash
+cargo install piz
+```
+
+首次运行自动进入交互式配置向导，选择 LLM 供应商、填入 API Key 即可使用。
+
+## 核心能力一览
+
+| 能力 | 说明 |
 |------|------|
-| Spring Boot | 基础框架 |
-| MyBatis-Plus | ORM 框架 |
-| Spring Security | 安全框架 |
-| Redis | 缓存 |
-| MySQL | 数据库 |
+| 🗣 自然语言 → 命令 | 描述需求，得到精确命令 |
+| 🔧 命令纠错 | `piz fix` 自动诊断失败命令，修复重试最多 3 轮 |
+| 💬 交互式对话 | `piz chat` 多轮对话模式，支持上下文跟进 |
+| 📖 命令解释 | `piz -e 'command'` 逐参数拆解命令含义 |
+| 🎯 多候选方案 | `-n 3` 生成多个命令方案，自主选择 |
+| ⚡ 本地缓存 | SQLite + TTL + LRU 淘汰，重复查询秒返回 |
+| 🐚 Shell 集成 | `piz init` 让 cd/export/source 在当前 Shell 生效，内置 p/pf/pc 快捷别名 |
+| 🔄 自动更新 | `piz update` 一键升级，后台静默检查新版本 |
 
-## 项目结构
+## 安全机制
 
-```
-piz
-├── piz-base2          # 基础模块
-├── piz-common         # 公共工具
-├── piz-extraction     # 数据抽取
-├── piz-log            # 日志模块
-└── piz-security       # 安全模块
-```
+piz 不盲目信任 LLM 输出，实现了**纵深防御**：
 
-## 核心特性
+**第一层 · Prompt 拒绝** — 非命令输入（闲聊、注入尝试）被 LLM 拒绝，不生成可执行命令
 
-### 统一响应封装
+**第二层 · 注入检测** — 本地正则扫描 12 种恶意模式（环境变量泄露、编码载荷、反弹 Shell、配置文件攻击等），命中直接拦截
 
-所有接口返回统一的 JSON 格式，包含状态码、消息和数据，便于前端统一处理。
+**第三层 · 危险分级** — 44 条规则分三级处理：
 
-### 全局异常处理
+| 级别 | 行为 | 示例 |
+|------|------|------|
+| ✅ 安全 | 自动执行 | `ls`、`df -h`、`git status` |
+| ⚠️ 警告 | 弹出确认 | `sudo apt install`、`chmod 755` |
+| 🚨 危险 | 红色警告 + 强制二次确认 | `rm -rf /`、`mkfs`、`DROP TABLE` |
 
-内置全局异常拦截器，自动捕获并格式化异常信息，开发环境输出详细堆栈，生产环境返回友好提示。
+## 支持的 LLM 供应商
 
-### 日志追踪
+原生支持 **4 种后端**：OpenAI · Claude · Gemini · Ollama（本地）
 
-集成链路追踪，每个请求自动生成唯一 traceId，方便排查问题。
+通过 OpenAI 兼容协议额外支持 **12 个供应商**：DeepSeek · 硅基流动 · OpenRouter · Moonshot · 智谱GLM · 百度千帆 · 阿里DashScope · Mistral · Together · Minimax · 字节BytePlus 等
+
+## 技术指标
+
+| 指标 | 数据 |
+|------|------|
+| 开发语言 | Rust (edition 2021) |
+| 代码规模 | 21 个模块，约 8,700 行 |
+| 自动化测试 | 437 个（344 单元 + 45 集成 + 48 平台专项） |
+| CI 覆盖 | Ubuntu / macOS / Windows 三平台 |
+| 当前版本 | v0.3.2 |
+| 许可证 | MIT |
