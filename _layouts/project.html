@@ -12,8 +12,8 @@ layout: base
     </div>
     {% endif %}
     <h1 class="project-hero__title">{{ page.title }}</h1>
-    {% if page.version %}
-    <span class="project-hero__version">{{ page.version }}</span>
+    {% if page.repo %}
+    <span class="project-hero__version js-project-version" data-repo="{{ page.repo }}">{{ page.version | default: '' }}</span>
     {% endif %}
     <p class="project-hero__tagline">{{ page.tagline }}</p>
     <div class="project-hero__meta">
@@ -53,12 +53,21 @@ layout: base
 </section>
 {% endif %}
 
-<!-- Content -->
+<!-- Content + TOC -->
 {% if content != "" %}
 <section class="project-content">
-  <div class="project-section__inner">
-    <div class="article__content">
-      {{ content }}
+  <div class="project-section__inner project-section__inner--wide">
+    <div class="project-body js-page-root">
+      <div class="project-body__main">
+        <div class="article__content js-article-content">
+          {{ content }}
+        </div>
+      </div>
+      <div class="project-body__aside col-aside d-print-none js-col-aside">
+        <aside class="page__aside js-page-aside">
+          {%- include aside/toc.html -%}
+        </aside>
+      </div>
     </div>
   </div>
 </section>
@@ -100,5 +109,30 @@ layout: base
 
 <script>
   {%- include scripts/lib/scroll-to.js -%}
+  {%- include scripts/lib/affix.js -%}
+  {%- include scripts/lib/toc.js -%}
+  {%- include scripts/aside/toc.js -%}
+  {%- include scripts/aside/affix.js -%}
   {%- include scripts/common.js -%}
+</script>
+
+<!-- 自动获取 GitHub 最新版本号 -->
+<script>
+(function() {
+  var el = document.querySelector('.js-project-version');
+  if (!el) return;
+  var repo = el.getAttribute('data-repo') || '';
+  var match = repo.match(/github\.com\/([^\/]+\/[^\/]+)/);
+  if (!match) return;
+  var apiUrl = 'https://api.github.com/repos/' + match[1] + '/releases/latest';
+  fetch(apiUrl)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.tag_name) {
+        el.textContent = data.tag_name;
+        el.style.display = 'inline-block';
+      }
+    })
+    .catch(function() {});
+})();
 </script>

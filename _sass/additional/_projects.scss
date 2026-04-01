@@ -52,7 +52,7 @@
 
   &__version {
     display: inline-block;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 600;
     padding: 0.15em 0.6em;
     border-radius: 20px;
@@ -177,6 +177,43 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 0 1.5rem;
+
+  &--wide {
+    max-width: 1200px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 3b. Content + TOC 双栏布局
+// -----------------------------------------------------------------------------
+.project-body {
+  display: flex;
+  gap: 2rem;
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__aside {
+    flex: 0 0 200px;
+    position: relative;
+
+    .page__aside {
+      position: sticky;
+      top: 1rem;
+    }
+
+    .toc-aside {
+      font-size: 0.82rem;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .project-body__aside {
+    display: none;
+  }
 }
 
 // -----------------------------------------------------------------------------
