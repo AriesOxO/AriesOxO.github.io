@@ -214,6 +214,21 @@
   }
 }
 
+// 年份折叠指示器
+.year-toggle {
+  font-size: 0.7em;
+  margin-right: 0.2rem;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.year-count {
+  font-size: 0.5em;
+  font-weight: 400;
+  color: var(--text-color-d);
+  vertical-align: middle;
+}
+
 // 归档文章列表容器
 .layout--archive {
   .article-list.items {
@@ -556,7 +571,7 @@ pre {
 
 .memo-item {
   position: relative;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.2rem;
 
   .memo-dot {
     position: absolute;
@@ -597,6 +612,19 @@ pre {
   font-size: 0.95rem;
   line-height: 1.7;
   color: var(--text-color);
+}
+
+.memo-image {
+  margin-top: 0.6rem;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
 }
 
 .memo-tags {

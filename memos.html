@@ -27,6 +27,11 @@ titles:
           <i class="fas fa-clock"></i> {{ memo.date }}
         </div>
         <div class="memo-text">{{ memo.content }}</div>
+        {% if memo.image %}
+        <div class="memo-image">
+          <img src="{{ memo.image }}" alt="" loading="lazy">
+        </div>
+        {% endif %}
         {% if memo.tags %}
         <div class="memo-tags">
           {% for tag in memo.tags %}

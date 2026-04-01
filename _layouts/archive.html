@@ -37,4 +37,46 @@ titles:
   {%- include scripts/archieve.js -%}
 </script>
 
+<script>
+// 归档页年份折叠：默认只展开最新年份
+(function() {
+  var SOURCES = window.TEXT_VARIABLES.sources;
+  window.Lazyload.js(SOURCES.jquery, function() {
+    var $result = $('.js-result');
+    var $sections = $result.find('section');
+    if ($sections.length <= 1) return;
+
+    $sections.each(function(i) {
+      var $sec = $(this);
+      var $header = $sec.find('.article-list__group-header');
+      var $list = $sec.find('ul.items');
+      var count = $list.find('li.item').length;
+
+      // 给标题加文章数和折叠指示器
+      $header.css('cursor', 'pointer');
+      $header.attr('title', '点击展开/收起');
+      if (!$header.find('.year-count').length) {
+        $header.append('<span class="year-count"> (' + count + ' 篇)</span>');
+      }
+      if (!$header.find('.year-toggle').length) {
+        $header.prepend('<span class="year-toggle">▼ </span>');
+      }
+
+      // 非最新年份默认折叠
+      if (i > 0) {
+        $list.hide();
+        $header.find('.year-toggle').text('► ');
+      }
+
+      // 点击切换
+      $header.on('click', function() {
+        $list.slideToggle(200);
+        var $toggle = $(this).find('.year-toggle');
+        $toggle.text($toggle.text().trim() === '►' ? '▼ ' : '► ');
+      });
+    });
+  });
+})();
+</script>
+
 {{ content }}
