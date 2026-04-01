@@ -1,52 +1,73 @@
-{%- assign _tag_max_size = 1 -%}
-{%- assign _tag_min_size = 1 -%}
-{%- assign _tag_cur_size = 1 -%}
-{%- assign _tags = site.tags | sort -%}
-{%- for _tag in _tags -%}
-  {%- assign _tag_cur_size = _tag[1].size -%}
-  {%- if _tag_cur_size > _tag_max_size -%}
-    {%- assign _tag_max_size =  _tag_cur_size -%}
-  {%- endif -%}
-  {%- if _tag_cur_size < _tag_min_size -%}
-    {%- assign _tag_min_size = _tag_cur_size -%}
-  {%- endif -%}
-{%- endfor -%}
-{%- assign _tag_gap_size =  _tag_max_size | minus: _tag_min_size | plus: 1 | divided_by: 4 -%}
-{%- if _tag_gap_size < 1 -%}
-  {%- assign _tag_gap_size = 1 -%}
-{%- endif -%}
+{%- assign _tags_by_count = site.tags | sort -%}
+
 <div class="site-tags js-tags">
-  <ul class="menu">
-    <li>
-      <button type="button" class="button button--secondary button--pill tag-button tag-button--all" data-encode="">
-        Show All<div class="tag-button__count">{{ site.posts | size }}</div>
-      </button>
-    </li>
-    {%- for _tag in _tags -%}
-      {%- assign _tag_cur_size = _tag[1].size -%}
-      {%- assign _tag_min_1 = _tag_min_size -%}
-      {%- assign _tag_max_1 = _tag_min_1 | plus: _tag_gap_size -%}
-      {%- assign _tag_min_2 = _tag_max_1 -%}
-      {%- assign _tag_max_2 = _tag_min_2 | plus: _tag_gap_size -%}
-      {%- assign _tag_min_3 = _tag_max_2 -%}
-      {%- assign _tag_max_3 = _tag_min_3 | plus: _tag_gap_size -%}
-      {%- assign _tag_min_4 = _tag_max_3 -%}
-      {%- assign _tag_max_4 = _tag_min_4 | plus: _tag_gap_size -%}
-      {%- if _tag_cur_size >= _tag_min_1 and _tag_cur_size < _tag_max_1 -%}
-        {%- assign _c_index = 1 -%}
-      {%- elsif _tag_cur_size >= _tag_min_2 and _tag_cur_size < _tag_max_2 -%}
-        {%- assign _c_index = 2 -%}
-      {%- elsif _tag_cur_size >= _tag_min_3 and _tag_cur_size < _tag_max_3 -%}
-        {%- assign _c_index = 3 -%}
-      {%- elsif _tag_cur_size >= _tag_min_4 and _tag_cur_size < _tag_max_4 -%}
-        {%- assign _c_index = 4 -%}
-      {%- else -%}
-        {%- assign _c_index = 4 -%}
-      {%- endif -%}
-      <li><button type="button" class="button button--pill tag-button tag-button-{{ _c_index }}" data-encode="{{ _tag[0] | strip | url_encode }}">
-          <span>{{ _tag[0] | strip }}</span><div class="tag-button__count">{{ _tag[1].size }}</div>
-        </button>
-      </li>
-    {%- endfor -%}
-  </ul>
+  {%- comment -%} 全部按钮 {%- endcomment -%}
+  <div class="tags-controls">
+    <button type="button" class="button button--secondary button--pill tag-button tag-button--all" data-encode="">
+      全部<div class="tag-button__count">{{ site.posts | size }}</div>
+    </button>
+  </div>
+
+  {%- comment -%} 热门标签（≥3篇） {%- endcomment -%}
+  {%- assign _hot_count = 0 -%}
+  {%- for _tag in _tags_by_count -%}
+    {%- if _tag[1].size >= 3 -%}
+      {%- assign _hot_count = _hot_count | plus: 1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if _hot_count > 0 -%}
+  <div class="tags-section">
+    <div class="tags-section__label">🔥 热门标签</div>
+    <ul class="tags-section__list tags-section__list--hot">
+      {%- for _tag in _tags_by_count -%}
+        {%- if _tag[1].size >= 3 -%}
+          {%- if _tag[1].size >= 6 -%}
+            {%- assign _tier = 'hot-1' -%}
+          {%- else -%}
+            {%- assign _tier = 'hot-2' -%}
+          {%- endif -%}
+          <li><button type="button" class="tag-pill tag-pill--{{ _tier }}" data-encode="{{ _tag[0] | strip | url_encode }}">
+            {{ _tag[0] | strip }} <span class="tag-pill__count">{{ _tag[1].size }}</span>
+          </button></li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+  {%- endif -%}
+
+  {%- comment -%} 其余标签（<3篇） {%- endcomment -%}
+  {%- assign _rest_count = 0 -%}
+  {%- for _tag in _tags_by_count -%}
+    {%- if _tag[1].size < 3 -%}
+      {%- assign _rest_count = _rest_count | plus: 1 -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if _rest_count > 0 -%}
+  <div class="tags-section">
+    <button type="button" class="tags-section__toggle js-tags-toggle">
+      <span class="tags-section__label">📑 更多标签</span>
+      <span class="tags-section__badge">{{ _rest_count }}</span>
+      <span class="tags-section__arrow js-tags-arrow">▶</span>
+    </button>
+    <ul class="tags-section__list tags-section__list--rest js-tags-rest" style="display:none;">
+      {%- assign _sorted_rest = _tags_by_count -%}
+      {%- for _tag in _sorted_rest -%}
+        {%- if _tag[1].size < 3 and _tag[1].size >= 2 -%}
+          <li><button type="button" class="tag-pill tag-pill--warm" data-encode="{{ _tag[0] | strip | url_encode }}">
+            {{ _tag[0] | strip }} <span class="tag-pill__count">{{ _tag[1].size }}</span>
+          </button></li>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- for _tag in _sorted_rest -%}
+        {%- if _tag[1].size < 2 -%}
+          <li><button type="button" class="tag-pill tag-pill--cool" data-encode="{{ _tag[0] | strip | url_encode }}">
+            {{ _tag[0] | strip }}
+          </button></li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
+  </div>
+  {%- endif -%}
 </div>

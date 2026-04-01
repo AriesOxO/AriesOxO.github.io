@@ -10,185 +10,209 @@ html {
 }
 
 // -----------------------------------------------------------------------------
-// 0. 归档页标签图案动效
+// 0. 分层标签云
 // -----------------------------------------------------------------------------
 
-.site-tags-shape-wrap {
-  position: relative;
+.site-tags {
+  padding: 0.8rem 0 1.2rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
 
-  .shape-hint {
-    position: absolute;
-    top: 0.4rem;
-    right: 0;
+.tags-controls {
+  margin-bottom: 0.8rem;
+}
+
+.tags-section {
+  margin-bottom: 0.6rem;
+
+  &__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-color-d);
+    margin-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  &__toggle {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.82rem;
-    color: var(--text-color-d);
-    z-index: 10;
-  }
-
-  .shape-name {
-    font-size: 1.1rem;
-  }
-
-  .shape-reshuffle {
     background: none;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 0.15em 0.6em;
-    font-size: 0.78rem;
-    color: var(--text-color-d);
+    border: none;
     cursor: pointer;
-    transition: all 0.15s ease;
+    padding: 0.3rem 0;
+    color: var(--text-color-d);
+    transition: color 0.15s ease;
 
     &:hover {
-      border-color: var(--primary-color);
       color: var(--primary-color);
     }
   }
-}
 
-// 标签图案容器
-.site-tags.is-shaped .menu {
-  display: block !important;
-  position: relative !important;
-  flex-wrap: unset !important;
+  &__badge {
+    font-size: 0.72rem;
+    padding: 0.1em 0.5em;
+    border-radius: 10px;
+    background: var(--border-color);
+    color: var(--text-color-d);
+  }
 
-  li {
-    position: absolute !important;
-    transition: opacity 0.4s ease, top 0.5s cubic-bezier(.4,0,.2,1), left 0.5s cubic-bezier(.4,0,.2,1) !important;
-    opacity: 0;
+  &__arrow {
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
 
-    &.shape-visible {
-      opacity: 1 !important;
+    &.is-open {
+      transform: rotate(90deg);
     }
   }
-}
 
-// -----------------------------------------------------------------------------
-// 0b. 归档页标签云样式优化
-// -----------------------------------------------------------------------------
-
-.layout--archive .site-tags,
-.tags-page .site-tags {
-  padding: 1.2rem 0 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  margin-bottom: 0.5rem;
-
-  // 去掉默认 menu 样式，改为 flex 包裹
-  .menu {
+  &__list {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.4rem;
+    gap: 0.4rem;
+    list-style: none;
     padding: 0;
     margin: 0;
-    list-style: none;
 
-    li {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    &--rest {
+      padding-top: 0.5rem;
+    }
+  }
+}
+
+// 标签药丸：4 层视觉权重
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.5;
+
+  &__count {
+    font-size: 0.78em;
+    opacity: 0.7;
+  }
+
+  // 热门 Tier 1（≥6篇）：大号 + 粉色填充
+  &--hot-1 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.35em 0.9em;
+    background: $main-color-1;
+    border-color: $main-color-1;
+    color: #fff;
+
+    .tag-pill__count { opacity: 0.85; }
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba($main-color-1, 0.35);
     }
   }
 
-  // 所有标签按钮基础样式重置
-  .tag-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3em;
-    padding: 0.25em 0.75em;
-    border-radius: 20px;
-    border: 1px solid transparent;
-    font-weight: 400;
-    line-height: 1.5;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    white-space: nowrap;
+  // 热门 Tier 2（3-5篇）：中号 + 青色边框
+  &--hot-2 {
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.3em 0.8em;
+    border-color: $main-color-3;
+    color: $text-color-d;
 
-    .tag-button__count {
-      font-size: 0.75em;
-      opacity: 0.75;
-      margin-left: 0;
-      vertical-align: baseline;
-      line-height: inherit;
-
-      &::before {
-        content: '(';
-      }
-      &::after {
-        content: ')';
-      }
+    &:hover {
+      background: $main-color-3;
+      border-color: $main-color-3;
+      color: #fff;
     }
   }
 
-  // "全部" 按钮
+  // 温和（2篇）：小号 + 灰色边框
+  &--warm {
+    font-size: 0.8rem;
+    padding: 0.2em 0.65em;
+    border-color: $border-color-l;
+    color: $text-color;
+
+    &:hover {
+      border-color: $main-color-3;
+      color: $text-color-d;
+    }
+  }
+
+  // 冷门（1篇）：最小 + 纯文字
+  &--cool {
+    font-size: 0.75rem;
+    padding: 0.15em 0.5em;
+    color: $text-color-l;
+    border-color: transparent;
+
+    &:hover {
+      border-color: $border-color-l;
+      color: $text-color;
+    }
+  }
+
+  // 选中态（archieve.js 添加 .focus class）
+  &.active,
+  &.focus {
+    background: $main-color-1 !important;
+    border-color: $main-color-1 !important;
+    color: #fff !important;
+  }
+}
+
+// 移动端标签优化
+@media (max-width: 768px) {
+  .tags-section__list {
+    gap: 0.3rem;
+  }
+
+  .tag-pill {
+    &--hot-1 { font-size: 0.85rem; padding: 0.3em 0.75em; }
+    &--hot-2 { font-size: 0.8rem; padding: 0.25em 0.65em; }
+    &--warm  { font-size: 0.75rem; }
+    &--cool  { font-size: 0.7rem; }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 0b. 全部按钮样式
+// -----------------------------------------------------------------------------
+
+.tags-controls {
   .tag-button--all {
     font-size: 0.85rem;
     font-weight: 600;
     padding: 0.3em 1em;
-    border-color: var(--border-color);
+    border: 1px solid $border-color-l;
     background: transparent;
-    color: var(--text-color-d);
-    margin-right: 0.4rem;
+    color: $text-color-d;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    .tag-button__count {
+      font-size: 0.75em;
+      opacity: 0.75;
+      &::before { content: '('; }
+      &::after { content: ')'; }
+    }
 
     &:hover,
+    &.focus,
     &.active {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
+      background: $main-color-1;
+      border-color: $main-color-1;
       color: #fff;
     }
-  }
-
-  // 4 个权重级别：字号 + 饱和度递增
-  .tag-button-1 {
-    font-size: 0.78rem;
-
-    &:hover, &.active {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      background: transparent;
-    }
-  }
-
-  .tag-button-2 {
-    font-size: 0.85rem;
-
-    &:hover, &.active {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-      background: transparent;
-    }
-  }
-
-  .tag-button-3 {
-    font-size: 0.92rem;
-    font-weight: 500;
-
-    &:hover, &.active {
-      border-color: var(--primary-color);
-      color: #fff;
-      background: var(--primary-color);
-    }
-  }
-
-  .tag-button-4 {
-    font-size: 1rem;
-    font-weight: 600;
-
-    &:hover, &.active {
-      border-color: var(--primary-color);
-      color: #fff;
-      background: var(--primary-color);
-    }
-  }
-
-  // 激活态统一样式（JS 添加的 active class）
-  .tag-button.active {
-    border-color: var(--primary-color) !important;
-    background: var(--primary-color) !important;
-    color: #fff !important;
   }
 }
 
@@ -545,11 +569,6 @@ pre {
   color: var(--text-color-d);
 }
 
-.tag-button.active {
-  background-color: var(--primary-color) !important;
-  color: #fff !important;
-}
-
 // -----------------------------------------------------------------------------
 // 5. 说说时间线
 // -----------------------------------------------------------------------------
@@ -843,26 +862,6 @@ pre {
     img {
       height: 72px;
     }
-  }
-}
-
-// 移动端归档页标签优化：缩小间距和字号
-@media (max-width: 768px) {
-  .layout--archive .site-tags,
-  .tags-page .site-tags {
-    .menu {
-      gap: 0.3rem 0.25rem;
-    }
-
-    .tag-button {
-      padding: 0.15em 0.55em;
-    }
-
-    .tag-button-1 { font-size: 0.7rem; }
-    .tag-button-2 { font-size: 0.75rem; }
-    .tag-button-3 { font-size: 0.8rem; }
-    .tag-button-4 { font-size: 0.85rem; }
-    .tag-button--all { font-size: 0.78rem; padding: 0.2em 0.8em; }
   }
 }
 
