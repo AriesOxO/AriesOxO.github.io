@@ -746,5 +746,31 @@ pre {
   }
 }
 
+// 移动端 footer：纵向堆叠，全部居中
+@media (max-width: 768px) {
+  .footer {
+    flex-direction: column;
+
+    .footer-counter {
+      position: static;
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+
+      img {
+        height: 48px;
+      }
+    }
+
+    > .main {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding-right: 1rem;
+      padding-left: 1rem;
+    }
+  }
+}
+
 /* end custom scss snippet */
 
