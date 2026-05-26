@@ -93,10 +93,10 @@ settings.d/
 
 ```bash
 # Linux/macOS
-curl -fsSL https://raw.githubusercontent.com/AriesOxO/awesome-ai-skills/master/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/<你的用户名>/<仓库名>/master/bootstrap.sh | bash
 
 # Windows PowerShell
-irm https://raw.githubusercontent.com/AriesOxO/awesome-ai-skills/master/bootstrap.ps1 | iex
+irm https://raw.githubusercontent.com/<你的用户名>/<仓库名>/master/bootstrap.ps1 | iex
 ```
 
 安装流程：检测配置目录 → 备份原有配置 → 选择 settings 模块 → 选择 skills → 智能合并生成。
