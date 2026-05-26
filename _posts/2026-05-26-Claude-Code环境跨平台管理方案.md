@@ -111,6 +111,4 @@ irm https://raw.githubusercontent.com/AriesOxO/awesome-ai-skills/master/bootstra
 4. **跨平台**：Bash + PowerShell 双版本，一套仓库三端通用
 5. **一键恢复**：远程 bootstrap 脚本，新电脑一行命令搞定
 
-AI 编码助手的配置管理本质上和 dotfiles 管理是同一个问题，但多了"模块化选择"和"智能合并"的需求。不是所有配置都适合所有环境，也不是每次安装都该从零开始。
-
-项目地址：[github.com/AriesOxO/awesome-ai-skills](https://github.com/AriesOxO/awesome-ai-skills)
+AI 编码助手的配置管理本质上和 dotfiles 管理是同一个问题，但多了"模块化选择"和"智能合并"的需求。不是所有配置都适合所有环境，也不是每次安装都该从零开始。如果你也有类似的需求，不妨参考这套思路，按自己的实际情况落地。
