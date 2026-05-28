@@ -1,0 +1,92 @@
+// -----------------------------------------------------------------------------
+// 4. 标签云页面
+// -----------------------------------------------------------------------------
+.tags-page {
+  .tags-cloud-wrap {
+    margin-bottom: 2rem;
+  }
+
+  .site-tags .menu {
+    gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    list-style: none;
+
+    li {
+      list-style: none;
+    }
+  }
+}
+
+.tag-section {
+  margin-bottom: 2rem;
+
+  &__title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__count {
+    font-size: 0.8rem;
+    color: var(--text-color-d);
+    font-weight: normal;
+  }
+
+  &__posts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed var(--border-color);
+      display: flex;
+      align-items: baseline;
+      gap: 0.8rem;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+.tag-post-date {
+  font-size: 0.8rem;
+  color: var(--text-color-d);
+  white-space: nowrap;
+  font-family: monospace;
+}
+
+.tag-post-item {
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tag-post-tags {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.tag-badge {
+  font-size: 0.72rem;
+  padding: 0.1em 0.5em;
+  border-radius: 10px;
+  background: var(--border-color);
+  color: var(--text-color-d);
+}

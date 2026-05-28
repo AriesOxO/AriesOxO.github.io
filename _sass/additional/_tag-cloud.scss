@@ -1,0 +1,206 @@
+// -----------------------------------------------------------------------------
+// 0. 分层标签云
+// -----------------------------------------------------------------------------
+
+.site-tags {
+  padding: 0.8rem 0 1.2rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.5rem;
+}
+
+.tags-controls {
+  margin-bottom: 0.8rem;
+}
+
+.tags-section {
+  margin-bottom: 0.6rem;
+
+  &__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-color-d);
+    margin-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem 0;
+    color: var(--text-color-d);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--primary-color);
+    }
+  }
+
+  &__badge {
+    font-size: 0.72rem;
+    padding: 0.1em 0.5em;
+    border-radius: 10px;
+    background: var(--border-color);
+    color: var(--text-color-d);
+  }
+
+  &__arrow {
+    font-size: 0.65rem;
+    transition: transform 0.2s ease;
+
+    &.is-open {
+      transform: rotate(90deg);
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    &--rest {
+      padding-top: 0.5rem;
+    }
+  }
+}
+
+// 标签药丸：4 层视觉权重
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.5;
+
+  &__count {
+    font-size: 0.78em;
+    opacity: 0.7;
+  }
+
+  // 热门 Tier 1（≥6篇）：大号 + 粉色填充
+  &--hot-1 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.35em 0.9em;
+    background: $main-color-1;
+    border-color: $main-color-1;
+    color: #fff;
+
+    .tag-pill__count { opacity: 0.85; }
+
+    &:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba($main-color-1, 0.35);
+    }
+  }
+
+  // 热门 Tier 2（3-5篇）：中号 + 青色边框
+  &--hot-2 {
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 0.3em 0.8em;
+    border-color: $main-color-3;
+    color: $text-color-d;
+
+    &:hover {
+      background: $main-color-3;
+      border-color: $main-color-3;
+      color: #fff;
+    }
+  }
+
+  // 温和（2篇）：小号 + 灰色边框
+  &--warm {
+    font-size: 0.8rem;
+    padding: 0.2em 0.65em;
+    border-color: $border-color-l;
+    color: $text-color;
+
+    &:hover {
+      border-color: $main-color-3;
+      color: $text-color-d;
+    }
+  }
+
+  // 冷门（1篇）：最小 + 纯文字
+  &--cool {
+    font-size: 0.75rem;
+    padding: 0.15em 0.5em;
+    color: $text-color-l;
+    border-color: transparent;
+
+    &:hover {
+      border-color: $border-color-l;
+      color: $text-color;
+    }
+  }
+
+  // 选中态（archieve.js 添加 .focus class）
+  &.active,
+  &.focus {
+    background: $main-color-1 !important;
+    border-color: $main-color-1 !important;
+    color: #fff !important;
+  }
+}
+
+// 移动端标签优化
+@media (max-width: 768px) {
+  .tags-section__list {
+    gap: 0.3rem;
+  }
+
+  .tag-pill {
+    &--hot-1 { font-size: 0.85rem; padding: 0.3em 0.75em; }
+    &--hot-2 { font-size: 0.8rem; padding: 0.25em 0.65em; }
+    &--warm  { font-size: 0.75rem; }
+    &--cool  { font-size: 0.7rem; }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 0b. 全部按钮样式
+// -----------------------------------------------------------------------------
+
+.tags-controls {
+  .tag-button--all {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.3em 1em;
+    border: 1px solid $border-color-l;
+    background: transparent;
+    color: $text-color-d;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3em;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    .tag-button__count {
+      font-size: 0.75em;
+      opacity: 0.75;
+      &::before { content: '('; }
+      &::after { content: ')'; }
+    }
+
+    &:hover,
+    &.focus,
+    &.active {
+      background: $main-color-1;
+      border-color: $main-color-1;
+      color: #fff;
+    }
+  }
+}

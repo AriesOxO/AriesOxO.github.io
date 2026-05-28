@@ -1,0 +1,81 @@
+// -----------------------------------------------------------------------------
+// 6. 打赏功能
+// -----------------------------------------------------------------------------
+.donate-section {
+  text-align: center;
+  margin: 2rem 0 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.donate-btn {
+  padding: 0.5rem 1.5rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--primary-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  i {
+    margin-right: 0.4rem;
+  }
+
+  &:hover,
+  &.donate-btn--active {
+    background: var(--primary-color);
+    color: #fff;
+  }
+}
+
+.donate-qrcodes {
+  margin-top: 1.2rem;
+}
+
+.donate-tip {
+  font-size: 0.88rem;
+  color: var(--text-color-d);
+  margin-bottom: 1rem;
+}
+
+.donate-qrcodes__wrap {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.donate-qrcode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  img {
+    width: 140px;
+    height: 140px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    object-fit: cover;
+  }
+
+  span {
+    font-size: 0.85rem;
+    color: var(--text-color-d);
+  }
+}
+
+.qr-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-color-d);
+  line-height: 1.5;
+}

@@ -35,7 +35,18 @@ rake post title="文章标题"
 
 ## Creating Blog Posts
 
-Posts go in `_posts/` with filename format `YYYY-MM-DD-slug.md`. The `rake post` command auto-generates a file with today's date and basic front matter. All posts default to `layout: article` with TOC, sharing, license, and edit-on-GitHub enabled (set in `_config.yml` defaults).
+Posts go in `_posts/` with filename format `YYYY-MM-DD-english-slug.md`. The slug **must be English** to avoid URL encoding issues (Chinese filenames break GitHub Pages URLs).
+
+The `rake post title="文章标题"` command auto-generates a file, but its template uses `layout: post` which is incorrect — manually change to `layout: article` or simply omit it (the `_config.yml` defaults already set `layout: article` with TOC, sharing, license, and edit-on-GitHub for all posts).
+
+Recommended front matter:
+```yaml
+---
+title: "中文标题"
+category: Java
+tags: [Spring Boot, MySQL]
+---
+```
 
 Use `<!--more-->` as the excerpt separator in post content.
 
@@ -171,7 +182,7 @@ Valid types: `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `improvement`, `perf
 
 ## Deployment
 
-GitHub Actions (`.github/workflows/jekyll.yml`) automatically builds and deploys to GitHub Pages on push to `master`.
+GitHub Actions (`.github/workflows/jekyll.yml`) automatically builds and deploys to GitHub Pages on push to `master`. CI uses `actions/jekyll-build-pages@v1` (GitHub's official action), not the local `bundle exec jekyll build` — so local build issues don't always reproduce in CI and vice versa.
 
 ## Design Documents
 

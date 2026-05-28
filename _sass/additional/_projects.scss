@@ -2,6 +2,25 @@
 // 开源项目 Landing Page 样式
 // =============================================================================
 
+// 项目页面颜色变量
+$project-status-active: #52c41a;
+$project-status-active-bg: rgba(82, 196, 26, 0.15);
+$project-status-maintained: #1890ff;
+$project-status-maintained-bg: rgba(24, 144, 255, 0.15);
+$project-status-archived: #8c8c8c;
+$project-status-archived-bg: rgba(140, 140, 140, 0.15);
+
+$project-bg-light: #f5f7f9;
+$project-bg-sidebar: #f8fafb;
+$project-bg-hover: #fafbfc;
+$project-border: #e8ecf0;
+$project-border-table: #f0f2f5;
+
+$project-shadow-xs: rgba(0, 0, 0, 0.03);
+$project-shadow-sm: rgba(0, 0, 0, 0.08);
+$project-shadow-md: rgba(0, 0, 0, 0.1);
+$project-shadow-lg: rgba(0, 0, 0, 0.12);
+
 // -----------------------------------------------------------------------------
 // 1. 项目详情页 — Hero 区域
 // -----------------------------------------------------------------------------
@@ -132,21 +151,21 @@
   }
 
   &--active {
-    background: rgba(82, 196, 26, 0.15);
-    color: #52c41a;
-    &::before { background: #52c41a; }
+    background: $project-status-active-bg;
+    color: $project-status-active;
+    &::before { background: $project-status-active; }
   }
 
   &--maintained {
-    background: rgba(24, 144, 255, 0.15);
-    color: #1890ff;
-    &::before { background: #1890ff; }
+    background: $project-status-maintained-bg;
+    color: $project-status-maintained;
+    &::before { background: $project-status-maintained; }
   }
 
   &--archived {
-    background: rgba(140, 140, 140, 0.15);
-    color: #8c8c8c;
-    &::before { background: #8c8c8c; }
+    background: $project-status-archived-bg;
+    color: $project-status-archived;
+    &::before { background: $project-status-archived; }
   }
 }
 
@@ -195,7 +214,7 @@
 // -----------------------------------------------------------------------------
 .project-features {
   padding: 4rem 0;
-  background: #f5f7f9;
+  background: $project-bg-light;
 }
 
 .project-features__grid {
@@ -210,13 +229,13 @@
   text-align: center;
   padding: 2rem 1.5rem;
   border-radius: 12px;
-  border: 1px solid #e8ecf0;
+  border: 1px solid $project-border;
   background: #fff;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px $project-shadow-sm;
   }
 
   &__icon {
@@ -256,7 +275,7 @@
 // =============================================================================
 .project-doc {
   background: #fff;
-  border-top: 1px solid #e8ecf0;
+  border-top: 1px solid $project-border;
   position: relative;
 }
 
@@ -266,8 +285,8 @@
   width: 100%;
   padding: 0.8rem 1.2rem;
   border: none;
-  border-bottom: 1px solid #e8ecf0;
-  background: #f8fafb;
+  border-bottom: 1px solid $project-border;
+  background: $project-bg-sidebar;
   color: var(--text-color);
   font-size: 0.9rem;
   font-weight: 500;
@@ -290,8 +309,8 @@
 // --- 左侧文档导航 ---
 .project-doc__nav {
   flex: 0 0 240px;
-  border-right: 1px solid #e8ecf0;
-  background: #f8fafb;
+  border-right: 1px solid $project-border;
+  background: $project-bg-sidebar;
 }
 
 .project-doc__nav-inner {
@@ -338,14 +357,14 @@
 
       &:hover {
         color: var(--text-color);
-        background: rgba(0, 0, 0, 0.03);
+        background: $project-shadow-xs;
       }
     }
 
     &--active > a {
       color: var(--primary-color);
       border-left-color: var(--primary-color);
-      background: rgba(0, 0, 0, 0.03);
+      background: $project-shadow-xs;
       font-weight: 500;
 
       i {
@@ -385,20 +404,20 @@
       font-size: 0.9rem;
 
       th {
-        background: #f5f7f9;
+        background: $project-bg-light;
         font-weight: 600;
         text-align: left;
         padding: 0.6rem 1rem;
-        border-bottom: 2px solid #e8ecf0;
+        border-bottom: 2px solid $project-border;
       }
 
       td {
         padding: 0.6rem 1rem;
-        border-bottom: 1px solid #f0f2f5;
+        border-bottom: 1px solid $project-border-table;
       }
 
       tr:hover td {
-        background: #fafbfc;
+        background: $project-bg-hover;
       }
     }
   }
@@ -408,7 +427,7 @@
 .project-related-inline {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 1px solid #e8ecf0;
+  border-top: 1px solid $project-border;
 
   h2 {
     margin-top: 0 !important;
@@ -427,14 +446,14 @@
   gap: 0.3rem;
   padding: 1rem 1.2rem;
   border-radius: 8px;
-  border: 1px solid #e8ecf0;
+  border: 1px solid $project-border;
   background: #fff;
   text-decoration: none !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px $project-shadow-sm;
   }
 
   &__date {
@@ -454,7 +473,7 @@
 // --- 右侧目录 ---
 .project-doc__toc {
   flex: 0 0 200px;
-  border-left: 1px solid #e8ecf0;
+  border-left: 1px solid $project-border;
 }
 
 .project-doc__toc-inner {
@@ -530,7 +549,7 @@
     width: 260px;
     height: 100%;
     z-index: 10;
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 12px $project-shadow-md;
 
     &--open {
       display: block;
@@ -619,7 +638,7 @@
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 32px $project-shadow-md;
   }
 
   &__header {
