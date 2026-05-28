@@ -1,0 +1,856 @@
+---
+layout: none
+permalink: /admin/
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>博客管理后台</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+/* === CSS 变量与主题 === */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --accent: #0d6efd;
+  --accent-hover: #0b5ed7;
+  --danger: #dc3545;
+  --danger-hover: #bb2d3b;
+  --success: #198754;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --radius: 8px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a2e;
+    --bg-secondary: #16213e;
+    --bg-tertiary: #0f3460;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --border-color: #2a2a4a;
+    --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+}
+/* === 全局重置 === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* === 布局 === */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+.header {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header h1 { font-size: 1.25rem; font-weight: 600; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+.main { flex: 1; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+/* === 按钮 === */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border: none; border-radius: var(--radius);
+  font-size: 0.875rem; font-weight: 500; cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+.btn-outline {
+  background: transparent; border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+.btn-outline:hover { background: var(--bg-tertiary); }
+.btn-sm { padding: 4px 10px; font-size: 0.8rem; }
+.btn-lg { padding: 12px 24px; font-size: 1rem; }
+
+/* === 登录视图 === */
+.login-view {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+}
+.login-card {
+  background: var(--bg-primary); padding: 48px;
+  border-radius: 12px; box-shadow: var(--shadow);
+  text-align: center; max-width: 400px; width: 90%;
+}
+.login-card h2 { margin-bottom: 12px; font-size: 1.5rem; }
+.login-card p { color: var(--text-secondary); margin-bottom: 24px; }
+
+/* === 用户信息 === */
+.user-info { font-size: 0.875rem; color: var(--text-secondary); }
+
+/* === 文章列表 === */
+.list-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+.search-input {
+  flex: 1; min-width: 200px; padding: 8px 14px;
+  border: 1px solid var(--border-color); border-radius: var(--radius);
+  background: var(--bg-primary); color: var(--text-primary);
+  font-size: 0.875rem;
+}
+.search-input:focus { outline: none; border-color: var(--accent); }
+.posts-container { display: flex; flex-direction: column; gap: 8px; }
+.post-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; background: var(--bg-primary);
+  border-radius: var(--radius); border: 1px solid var(--border-color);
+  transition: box-shadow 0.2s;
+}
+.post-item:hover { box-shadow: var(--shadow); }
+.post-info { flex: 1; min-width: 0; }
+.post-title {
+  font-weight: 500; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.post-date { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+.post-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 12px; }
+
+/* === 编辑器 === */
+.editor-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.editor-header-actions { display: flex; gap: 8px; }
+.editor-meta {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px; margin-bottom: 12px;
+  background: var(--bg-primary); padding: 16px;
+  border-radius: var(--radius); border: 1px solid var(--border-color);
+}
+.meta-row { display: flex; flex-direction: column; gap: 4px; }
+.meta-row label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+.meta-row input {
+  padding: 6px 10px; border: 1px solid var(--border-color);
+  border-radius: 4px; background: var(--bg-secondary);
+  color: var(--text-primary); font-size: 0.875rem;
+}
+.meta-row input:focus { outline: none; border-color: var(--accent); }
+.editor-toolbar {
+  display: flex; align-items: center; gap: 4px;
+  padding: 8px 12px; background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius) var(--radius) 0 0;
+  flex-wrap: wrap;
+}
+.toolbar-sep { width: 1px; height: 20px; background: var(--border-color); margin: 0 8px; }
+.editor-body {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border-color); border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  overflow: hidden; height: calc(100vh - 340px); min-height: 400px;
+}
+.editor-pane { position: relative; display: flex; flex-direction: column; }
+.editor-pane textarea {
+  flex: 1; padding: 16px; border: none; resize: none;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.9rem; line-height: 1.6;
+  background: var(--bg-primary); color: var(--text-primary);
+}
+.editor-pane textarea:focus { outline: none; }
+.drop-zone {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 8px; text-align: center; font-size: 0.8rem;
+  color: var(--text-secondary); background: var(--bg-tertiary);
+  border-top: 1px dashed var(--border-color);
+  transition: all 0.2s;
+}
+.drop-zone.dragover {
+  background: var(--accent); color: #fff;
+  padding: 20px; font-size: 1rem;
+}
+.preview-pane {
+  padding: 16px; overflow-y: auto;
+  border-left: 1px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+/* === 预览区 Markdown 样式 === */
+.preview-pane h1, .preview-pane h2, .preview-pane h3 {
+  margin: 16px 0 8px; border-bottom: 1px solid var(--border-color);
+  padding-bottom: 4px;
+}
+.preview-pane p { margin: 8px 0; line-height: 1.7; }
+.preview-pane code {
+  background: var(--bg-tertiary); padding: 2px 6px;
+  border-radius: 3px; font-size: 0.85em;
+}
+.preview-pane pre {
+  background: var(--bg-secondary); padding: 12px;
+  border-radius: var(--radius); overflow-x: auto;
+  margin: 12px 0;
+}
+.preview-pane pre code { background: none; padding: 0; }
+.preview-pane img { max-width: 100%; border-radius: var(--radius); }
+.preview-pane blockquote {
+  border-left: 4px solid var(--accent); padding-left: 12px;
+  color: var(--text-secondary); margin: 12px 0;
+}
+
+/* === Toast 通知 === */
+.toast-container {
+  position: fixed; top: 20px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  padding: 12px 20px; border-radius: var(--radius);
+  color: #fff; font-size: 0.875rem; box-shadow: var(--shadow);
+  animation: slideIn 0.3s ease;
+}
+.toast-success { background: var(--success); }
+.toast-error { background: var(--danger); }
+.toast-info { background: var(--accent); }
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* === Loading === */
+.loading {
+  text-align: center; padding: 40px;
+  color: var(--text-secondary); font-size: 0.9rem;
+}
+
+/* === 响应式 === */
+@media (max-width: 768px) {
+  .main { padding: 12px; }
+  .editor-body { grid-template-columns: 1fr; height: auto; }
+  .preview-pane { border-left: none; border-top: 1px solid var(--border-color); min-height: 300px; }
+  .editor-meta { grid-template-columns: 1fr; }
+  .post-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .post-actions { margin-left: 0; }
+  .header { padding: 10px 14px; }
+  .header h1 { font-size: 1rem; }
+}
+</style>
+</head>
+<body>
+<!-- 登录视图 -->
+<div id="view-login" class="login-view" style="display:none;">
+  <div class="login-card">
+    <h2>博客管理后台</h2>
+    <p>使用 GitHub 账号登录以管理博客文章</p>
+    <button class="btn btn-primary btn-lg" onclick="doLogin()">
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      使用 GitHub 登录
+    </button>
+  </div>
+</div>
+
+<!-- 主应用视图 -->
+<div id="view-app" class="app" style="display:none;">
+  <header class="header">
+    <h1>博客管理后台</h1>
+    <div class="header-actions">
+      <span id="user-info" class="user-info"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">登出</button>
+    </div>
+  </header>
+  <main class="main">
+    <!-- 文章列表视图 -->
+    <div id="panel-list">
+      <div class="list-toolbar">
+        <button class="btn btn-primary" onclick="showEditor(null)">+ 新建文章</button>
+        <input type="text" id="search-input" class="search-input" placeholder="搜索文章..." oninput="filterPosts()">
+      </div>
+      <div id="posts-container" class="posts-container">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+    <!-- 编辑器视图 -->
+    <div id="panel-editor" style="display:none;">
+      <div class="editor-header">
+        <button class="btn btn-outline" onclick="showList()">← 返回列表</button>
+        <div class="editor-header-actions">
+          <button class="btn btn-primary" onclick="savePost()">保存文章</button>
+        </div>
+      </div>
+      <div class="editor-meta">
+        <div class="meta-row">
+          <label>标题</label>
+          <input type="text" id="meta-title" placeholder="文章标题">
+        </div>
+        <div class="meta-row">
+          <label>分类</label>
+          <input type="text" id="meta-category" placeholder="如：Java">
+        </div>
+        <div class="meta-row">
+          <label>标签</label>
+          <input type="text" id="meta-tags" placeholder="逗号分隔，如：Spring Boot, MySQL">
+        </div>
+        <div class="meta-row">
+          <label>系列</label>
+          <input type="text" id="meta-series" placeholder="可选，系列名称">
+        </div>
+      </div>
+      <div class="editor-toolbar">
+        <button class="btn btn-outline btn-sm" onclick="insertMd('bold')" title="加粗">B</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('italic')" title="斜体"><em>I</em></button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('code')" title="代码块">&lt;/&gt;</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('link')" title="链接">🔗</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('image')" title="图片">🖼</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('h2')" title="标题">H2</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('h3')" title="标题">H3</button>
+        <span class="toolbar-sep"></span>
+        <button class="btn btn-outline btn-sm" onclick="triggerImageUpload()">📤 上传图片</button>
+        <input type="file" id="image-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+      </div>
+      <div class="editor-body">
+        <div class="editor-pane">
+          <textarea id="editor-textarea" placeholder="在此输入 Markdown 内容..." oninput="updatePreview()"></textarea>
+          <div class="drop-zone" id="drop-zone">拖拽图片到此处上传</div>
+        </div>
+        <div class="preview-pane" id="preview-pane"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast 通知 -->
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+// ============================================================
+// 配置常量
+// ============================================================
+const CLIENT_ID = 'YOUR_CLIENT_ID_HERE';
+const WORKER_URL = 'YOUR_WORKER_URL_HERE';
+const REPO_OWNER = 'AriesOxO';
+const REPO_NAME = 'AriesOxO.github.io';
+const API_BASE = 'https://api.github.com';
+
+// ============================================================
+// 状态管理
+// ============================================================
+let currentPosts = [];
+let editingFile = null; // { path, sha, name }
+
+// ============================================================
+// 工具函数
+// ============================================================
+function getToken() {
+  return sessionStorage.getItem('github_token');
+}
+
+function setToken(token) {
+  sessionStorage.setItem('github_token', token);
+}
+
+function clearToken() {
+  sessionStorage.removeItem('github_token');
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+async function apiRequest(endpoint, options = {}) {
+  const token = getToken();
+  const headers = {
+    'Authorization': `token ${token}`,
+    'Accept': 'application/vnd.github.v3+json',
+    ...options.headers
+  };
+  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `API 请求失败: ${res.status}`);
+  }
+  return res.status === 204 ? null : res.json();
+}
+</script>
+<script>
+// ============================================================
+// 认证模块
+// ============================================================
+function doLogin() {
+  const redirectUri = `${location.origin}/admin/`;
+  const url = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=repo`;
+  location.href = url;
+}
+
+function doLogout() {
+  clearToken();
+  showView('login');
+}
+
+async function exchangeCode(code) {
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      setToken(data.access_token);
+      // 清除 URL 中的 code 参数
+      history.replaceState(null, '', location.pathname);
+      return true;
+    } else {
+      throw new Error(data.error || '获取 token 失败');
+    }
+  } catch (e) {
+    showToast(`认证失败: ${e.message}`, 'error');
+    return false;
+  }
+}
+
+async function verifyUser() {
+  try {
+    const user = await apiRequest('/user');
+    if (user.login !== REPO_OWNER) {
+      showToast('权限不足：仅博客所有者可登录', 'error');
+      clearToken();
+      return false;
+    }
+    document.getElementById('user-info').textContent = `👤 ${user.login}`;
+    return true;
+  } catch (e) {
+    showToast(`验证用户失败: ${e.message}`, 'error');
+    clearToken();
+    return false;
+  }
+}
+
+function showView(view) {
+  document.getElementById('view-login').style.display = view === 'login' ? 'flex' : 'none';
+  document.getElementById('view-app').style.display = view === 'app' ? 'flex' : 'none';
+}
+</script>
+
+<script>
+// ============================================================
+// 文章列表模块
+// ============================================================
+async function loadPosts() {
+  const container = document.getElementById('posts-container');
+  container.innerHTML = '<div class="loading">加载文章列表中...</div>';
+  try {
+    const files = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/_posts`);
+    currentPosts = files
+      .filter(f => f.name.endsWith('.md'))
+      .map(f => {
+        const match = f.name.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.md$/);
+        return {
+          name: f.name,
+          path: f.path,
+          sha: f.sha,
+          date: match ? match[1] : '',
+          title: match ? match[2].replace(/-/g, ' ') : f.name
+        };
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
+    renderPosts(currentPosts);
+  } catch (e) {
+    container.innerHTML = `<div class="loading" style="color:var(--danger)">加载失败: ${e.message}</div>`;
+  }
+}
+
+function renderPosts(posts) {
+  const container = document.getElementById('posts-container');
+  if (posts.length === 0) {
+    container.innerHTML = '<div class="loading">暂无文章</div>';
+    return;
+  }
+  container.innerHTML = posts.map(p => `
+    <div class="post-item">
+      <div class="post-info">
+        <div class="post-title">${escapeHtml(p.title)}</div>
+        <div class="post-date">${p.date}</div>
+      </div>
+      <div class="post-actions">
+        <button class="btn btn-outline btn-sm" onclick="editPost('${p.path}', '${p.sha}', '${escapeAttr(p.name)}')">编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePost('${p.path}', '${p.sha}', '${escapeAttr(p.name)}')">删除</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterPosts() {
+  const query = document.getElementById('search-input').value.toLowerCase();
+  const filtered = currentPosts.filter(p =>
+    p.title.toLowerCase().includes(query) || p.date.includes(query)
+  );
+  renderPosts(filtered);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function escapeAttr(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+</script>
+
+<script>
+// ============================================================
+// 编辑器模块
+// ============================================================
+function showList() {
+  document.getElementById('panel-list').style.display = 'block';
+  document.getElementById('panel-editor').style.display = 'none';
+  editingFile = null;
+}
+
+function showEditor(file) {
+  document.getElementById('panel-list').style.display = 'none';
+  document.getElementById('panel-editor').style.display = 'block';
+  // 清空表单
+  document.getElementById('meta-title').value = '';
+  document.getElementById('meta-category').value = '';
+  document.getElementById('meta-tags').value = '';
+  document.getElementById('meta-series').value = '';
+  document.getElementById('editor-textarea').value = '';
+  document.getElementById('preview-pane').innerHTML = '';
+  editingFile = file;
+}
+
+async function editPost(path, sha, name) {
+  showEditor({ path, sha, name });
+  showToast('加载文章内容...', 'info');
+  try {
+    const data = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`);
+    const content = decodeBase64(data.content);
+    editingFile.sha = data.sha;
+    // 解析 front matter
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+    if (fmMatch) {
+      parseFrontMatter(fmMatch[1]);
+      document.getElementById('editor-textarea').value = fmMatch[2];
+    } else {
+      document.getElementById('editor-textarea').value = content;
+    }
+    updatePreview();
+    showToast('文章已加载', 'success');
+  } catch (e) {
+    showToast(`加载失败: ${e.message}`, 'error');
+  }
+}
+
+function parseFrontMatter(fm) {
+  const lines = fm.split('\n');
+  for (const line of lines) {
+    const m = line.match(/^(\w+):\s*(.*)$/);
+    if (!m) continue;
+    const [, key, val] = m;
+    if (key === 'title') {
+      document.getElementById('meta-title').value = val.replace(/^["']|["']$/g, '');
+    } else if (key === 'category') {
+      document.getElementById('meta-category').value = val;
+    } else if (key === 'tags') {
+      const tags = val.replace(/^\[|\]$/g, '').trim();
+      document.getElementById('meta-tags').value = tags;
+    } else if (key === 'series') {
+      document.getElementById('meta-series').value = val.replace(/^["']|["']$/g, '');
+    }
+  }
+}
+
+function buildFrontMatter() {
+  const title = document.getElementById('meta-title').value.trim();
+  const category = document.getElementById('meta-category').value.trim();
+  const tags = document.getElementById('meta-tags').value.trim();
+  const series = document.getElementById('meta-series').value.trim();
+
+  let fm = '---\n';
+  fm += `title: "${title}"\n`;
+  if (category) fm += `category: ${category}\n`;
+  if (tags) fm += `tags: [${tags}]\n`;
+  if (series) fm += `series: "${series}"\n`;
+  fm += '---\n';
+  return fm;
+}
+
+// ============================================================
+// 保存文章
+// ============================================================
+async function savePost() {
+  const title = document.getElementById('meta-title').value.trim();
+  if (!title) {
+    showToast('请输入文章标题', 'error');
+    return;
+  }
+  const content = document.getElementById('editor-textarea').value;
+  const fullContent = buildFrontMatter() + '\n' + content;
+  const encoded = encodeBase64(fullContent);
+
+  let path, message;
+  if (editingFile && editingFile.path) {
+    // 更新已有文章
+    path = editingFile.path;
+    message = `docs: 更新文章 ${editingFile.name}`;
+  } else {
+    // 新建文章
+    const date = new Date().toISOString().slice(0, 10);
+    const slug = generateSlug(title);
+    const filename = `${date}-${slug}.md`;
+    path = `_posts/${filename}`;
+    message = `docs: 新建文章 ${filename}`;
+  }
+
+  showToast('保存中...', 'info');
+  try {
+    const body = { message, content: encoded };
+    if (editingFile && editingFile.sha) {
+      body.sha = editingFile.sha;
+    }
+    const res = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    editingFile = { path, sha: res.content.sha, name: path.split('/').pop() };
+    showToast('保存成功！', 'success');
+  } catch (e) {
+    showToast(`保存失败: ${e.message}`, 'error');
+  }
+}
+
+function generateSlug(title) {
+  // 使用时间戳作为 slug（避免中文 URL 编码问题）
+  const ts = Date.now().toString(36);
+  // 尝试提取英文单词
+  const english = title.replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-').toLowerCase();
+  return english || ts;
+}
+
+// ============================================================
+// 删除文章
+// ============================================================
+async function deletePost(path, sha, name) {
+  if (!confirm(`确定要删除文章「${name}」吗？此操作不可撤销。`)) return;
+  showToast('删除中...', 'info');
+  try {
+    await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `docs: 删除文章 ${name}`,
+        sha: sha
+      })
+    });
+    showToast('文章已删除', 'success');
+    loadPosts();
+  } catch (e) {
+    showToast(`删除失败: ${e.message}`, 'error');
+  }
+}
+
+// ============================================================
+// Markdown 预览
+// ============================================================
+function updatePreview() {
+  const md = document.getElementById('editor-textarea').value;
+  const html = marked.parse(md);
+  document.getElementById('preview-pane').innerHTML = html;
+}
+
+// ============================================================
+// 工具栏插入
+// ============================================================
+function insertMd(type) {
+  const ta = document.getElementById('editor-textarea');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end);
+  let insert = '';
+
+  switch (type) {
+    case 'bold': insert = `**${selected || '粗体文本'}**`; break;
+    case 'italic': insert = `*${selected || '斜体文本'}*`; break;
+    case 'code': insert = selected.includes('\n')
+      ? `\n\`\`\`\n${selected || '代码'}\n\`\`\`\n`
+      : `\`${selected || '代码'}\``; break;
+    case 'link': insert = `[${selected || '链接文本'}](url)`; break;
+    case 'image': insert = `![${selected || '图片描述'}](url)`; break;
+    case 'h2': insert = `\n## ${selected || '标题'}\n`; break;
+    case 'h3': insert = `\n### ${selected || '标题'}\n`; break;
+  }
+
+  ta.value = ta.value.substring(0, start) + insert + ta.value.substring(end);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = start + insert.length;
+  updatePreview();
+}
+
+// ============================================================
+// 图片上传
+// ============================================================
+function triggerImageUpload() {
+  document.getElementById('image-upload').click();
+}
+
+async function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  await uploadImage(file);
+  event.target.value = '';
+}
+
+async function uploadImage(file) {
+  if (!file.type.startsWith('image/')) {
+    showToast('请选择图片文件', 'error');
+    return;
+  }
+  showToast('上传图片中...', 'info');
+  try {
+    const base64 = await fileToBase64(file);
+    const timestamp = Date.now();
+    const ext = file.name.split('.').pop();
+    const path = `assets/images/posts/${timestamp}-${file.name}`;
+
+    await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `docs: 上传图片 ${file.name}`,
+        content: base64
+      })
+    });
+
+    // 插入 Markdown 图片语法
+    const imgUrl = `/${path}`;
+    const ta = document.getElementById('editor-textarea');
+    const pos = ta.selectionStart;
+    const imgMd = `![${file.name}](${imgUrl})`;
+    ta.value = ta.value.substring(0, pos) + imgMd + ta.value.substring(pos);
+    ta.selectionStart = ta.selectionEnd = pos + imgMd.length;
+    updatePreview();
+    showToast('图片上传成功', 'success');
+  } catch (e) {
+    showToast(`上传失败: ${e.message}`, 'error');
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      // 去掉 data:image/xxx;base64, 前缀
+      const base64 = reader.result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+</script>
+
+<script>
+// ============================================================
+// Base64 编解码（支持 UTF-8 中文）
+// ============================================================
+function encodeBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+
+function decodeBase64(base64) {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
+}
+
+// ============================================================
+// 拖拽上传
+// ============================================================
+function initDragDrop() {
+  const dropZone = document.getElementById('drop-zone');
+  const editorPane = document.querySelector('.editor-pane');
+  if (!editorPane) return;
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    editorPane.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    editorPane.addEventListener(evt, e => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+    });
+  });
+  editorPane.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) uploadImage(files[0]);
+  });
+}
+
+// ============================================================
+// 应用初始化
+// ============================================================
+async function init() {
+  // 检查 URL 中是否有 OAuth code
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+
+  if (code) {
+    const success = await exchangeCode(code);
+    if (!success) {
+      showView('login');
+      return;
+    }
+  }
+
+  const token = getToken();
+  if (!token) {
+    showView('login');
+    return;
+  }
+
+  // 验证用户
+  const valid = await verifyUser();
+  if (!valid) {
+    showView('login');
+    return;
+  }
+
+  showView('app');
+  loadPosts();
+  initDragDrop();
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

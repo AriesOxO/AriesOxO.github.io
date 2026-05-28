@@ -200,6 +200,7 @@ exclude:
   - /screenshots
   - /test
   - /vendor
+  - /admin/worker
 
 defaults:
   - scope:
