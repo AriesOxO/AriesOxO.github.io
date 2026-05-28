@@ -67,6 +67,13 @@
             </li>
           {%- endif -%}
 
+          {%- if include.article.content -%}
+            {%- assign _words = include.article.content | number_of_words: "cjk" -%}
+            {%- assign _reading_time = _words | divided_by: 300 -%}
+            {%- if _reading_time < 1 -%}{%- assign _reading_time = 1 -%}{%- endif -%}
+            <li><i class="far fa-clock"></i> {{ _reading_time }} 分钟阅读</li>
+          {%- endif -%}
+
           {%- if _pageview -%}
             {%- if site.pageview.provider -%}
               {%- include snippets/get-locale-string.html key='VIEWS' -%}

@@ -19,6 +19,22 @@
       $articleContent.on('click', '.anchor', function() {
         $scroll.scrollToAnchor('#' + $(this).parent().attr('id'), 400);
       });
+
+      $articleContent.find('.highlight').each(function() {
+        var $block = $(this);
+        if ($block.find('.code-copy-btn').length) return;
+        var $btn = $('<button class="code-copy-btn d-print-none" title="复制代码"><i class="fas fa-copy"></i></button>');
+        $block.css('position', 'relative').append($btn);
+      });
+      $articleContent.on('click', '.code-copy-btn', function(e) {
+        e.stopPropagation();
+        var $btn = $(this);
+        var code = $btn.siblings('pre').find('code').text() || $btn.parent().find('code').text();
+        navigator.clipboard.writeText(code).then(function() {
+          $btn.html('<i class="fas fa-check"></i>');
+          setTimeout(function() { $btn.html('<i class="fas fa-copy"></i>'); }, 2000);
+        });
+      });
     });
   });
 })();

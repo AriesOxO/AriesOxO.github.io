@@ -10,6 +10,7 @@ type: article
 
 <div class="layout--article">
   {%- include article/top/custom.html -%}
+  {%- include article-series.html -%}
 
   <div class="article__content" itemprop="articleBody">{{ content }}</div>
 
@@ -20,6 +21,7 @@ type: article
   <div class="d-print-none">
     {%- include article-footer.html -%}
     {%- include article-section-navigator.html -%}
+    {%- include related-posts.html -%}
   </div>
 
 </div>

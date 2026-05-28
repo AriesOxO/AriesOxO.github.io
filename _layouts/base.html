@@ -5,6 +5,14 @@ layout: none
 {%- include snippets/get-lang.html -%}
 <html lang="{{ __return }}">
   <head>
+    <script>
+      (function() {
+        var t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     {%- include analytics.html -%}
     {%- include head.html -%}
     <script>
@@ -57,6 +65,34 @@ layout: none
             });
         });
       });
+    </script>
+    <button class="theme-toggle d-print-none" id="themeToggle" aria-label="切换暗色模式">🌙</button>
+    <button class="back-to-top d-print-none" id="backToTop" aria-label="返回顶部"><i class="fas fa-chevron-up"></i></button>
+    <script>
+      (function() {
+        var btn = document.getElementById('themeToggle');
+        var html = document.documentElement;
+        function isDark() { return html.getAttribute('data-theme') === 'dark'; }
+        function update() { btn.textContent = isDark() ? '☀️' : '🌙'; }
+        update();
+        btn.addEventListener('click', function() {
+          if (isDark()) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+          } else {
+            html.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+          }
+          update();
+        });
+        var topBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', function() {
+          topBtn.classList.toggle('visible', window.scrollY > 300);
+        });
+        topBtn.addEventListener('click', function() {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      })();
     </script>
   </body>
 </html>

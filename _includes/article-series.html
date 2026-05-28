@@ -1,0 +1,23 @@
+{%- if page.series -%}
+{%- assign _series_posts = site.posts | where: "series", page.series | sort: "date" -%}
+{%- if _series_posts.size > 1 -%}
+<div class="article-series">
+  <div class="article-series__header">
+    <i class="fas fa-layer-group"></i>
+    <span>「{{ page.series }}」系列</span>
+    <span class="article-series__count">共 {{ _series_posts.size }} 篇</span>
+  </div>
+  <ol class="article-series__list">
+    {%- for post in _series_posts -%}
+    <li class="article-series__item{% if post.url == page.url %} article-series__item--current{% endif %}">
+      {%- if post.url == page.url -%}
+        <span>{{ post.title }}</span>
+      {%- else -%}
+        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      {%- endif -%}
+    </li>
+    {%- endfor -%}
+  </ol>
+</div>
+{%- endif -%}
+{%- endif -%}

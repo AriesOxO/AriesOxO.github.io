@@ -18,6 +18,31 @@ pre {
   font-size: 0.88em;
 }
 
+// 代码复制按钮
+.code-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity 0.2s, background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+  }
+}
+
+.highlight:hover .code-copy-btn {
+  opacity: 1;
+}
+
 // -----------------------------------------------------------------------------
 // 2. 文章正文优化
 // -----------------------------------------------------------------------------
@@ -32,5 +57,93 @@ pre {
     h2, h3, h4 {
       margin-top: 1.8rem;
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 3. 相关文章推荐
+// -----------------------------------------------------------------------------
+.related-posts {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #eee);
+
+  &__title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-primary, inherit);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  &__item-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 1rem;
+  }
+
+  &__item-date {
+    font-size: 0.85rem;
+    color: var(--text-muted, #999);
+    white-space: nowrap;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 4. 文章系列导航
+// -----------------------------------------------------------------------------
+.article-series {
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
+  background: var(--card-bg, #f6f8fa);
+  border: 1px solid var(--border-color, #e1e4e8);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+  }
+
+  &__count {
+    font-weight: normal;
+    font-size: 0.8rem;
+    color: var(--text-muted, #999);
+    margin-left: auto;
+  }
+
+  &__list {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  &__item--current {
+    font-weight: 600;
+    color: var(--text-primary, inherit);
   }
 }

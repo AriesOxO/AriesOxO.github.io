@@ -1,0 +1,38 @@
+{%- assign _max_related = 4 -%}
+{%- assign _related = "" | split: "" -%}
+{%- assign _current_tags = page.tags -%}
+{%- assign _current_category = page.category | default: page.categories[0] -%}
+
+{%- for post in site.posts -%}
+  {%- if post.url == page.url -%}{%- continue -%}{%- endif -%}
+  {%- if _related.size >= _max_related -%}{%- break -%}{%- endif -%}
+  {%- assign _match = false -%}
+  {%- for tag in post.tags -%}
+    {%- if _current_tags contains tag -%}
+      {%- assign _match = true -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- unless _match -%}
+    {%- if post.category == _current_category or post.categories contains _current_category -%}
+      {%- assign _match = true -%}
+    {%- endif -%}
+  {%- endunless -%}
+  {%- if _match -%}
+    {%- assign _related = _related | push: post -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if _related.size > 0 -%}
+<div class="related-posts">
+  <h3 class="related-posts__title"><i class="fas fa-book-reader"></i> 相关文章</h3>
+  <div class="related-posts__list">
+    {%- for post in _related -%}
+    <a class="related-posts__item" href="{{ post.url | relative_url }}">
+      <span class="related-posts__item-title">{{ post.title }}</span>
+      <span class="related-posts__item-date">{{ post.date | date: "%Y-%m-%d" }}</span>
+    </a>
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}

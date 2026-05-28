@@ -15,17 +15,19 @@ window.Lazyload.js([SOURCES.jquery, PAHTS.search_js], function() {
 
   /// search
   function searchByQuery(query) {
-    var i, j, key, keys, cur, _title, result = {};
+    var i, j, key, keys, cur, result = {};
+    var q = query.toLowerCase();
     keys = Object.keys(searchData);
     for (i = 0; i < keys.length; i++) {
       key = keys[i];
       for (j = 0; j < searchData[key].length; j++) {
-        cur = searchData[key][j], _title = cur.title;
-        if ((result[key] === undefined || result[key] && result[key].length < 4 )
-          && _title.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          if (result[key] === undefined) {
-            result[key] = [];
-          }
+        cur = searchData[key][j];
+        if (result[key] && result[key].length >= 8) break;
+        var title = (cur.title || '').toLowerCase();
+        var tags = (cur.tags || '').toLowerCase();
+        var excerpt = (cur.excerpt || '').toLowerCase();
+        if (title.indexOf(q) >= 0 || tags.indexOf(q) >= 0 || excerpt.indexOf(q) >= 0) {
+          if (result[key] === undefined) result[key] = [];
           result[key].push(cur);
         }
       }

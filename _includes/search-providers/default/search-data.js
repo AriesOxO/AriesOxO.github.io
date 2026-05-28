@@ -5,6 +5,8 @@ window.TEXT_SEARCH_DATA={
       {%- for _article in _collection.docs -%}
       {%- unless forloop.first -%},{%- endunless -%}
       {'title':{{ _article.title | jsonify }},
+      'tags':{{ _article.tags | default: "" | join: " " | jsonify }},
+      'excerpt':{{ _article.content | strip_html | truncate: 120, "" | jsonify }},
       {%- include snippets/prepend-baseurl.html path=_article.url -%}
       {%- assign _url = __return -%}
       'url':{{ _url | jsonify }}}
