@@ -1,7 +1,9 @@
 export default {
   async fetch(request, env) {
+    const origin = request.headers.get('Origin') || '';
+    const allowed = origin.toLowerCase().includes('ariesoxo.github.io') || origin.includes('localhost');
     const corsHeaders = {
-      'Access-Control-Allow-Origin': 'https://AriesOxO.github.io',
+      'Access-Control-Allow-Origin': allowed ? origin : 'https://ariesoxo.github.io',
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     };
