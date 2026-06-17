@@ -170,19 +170,45 @@ a:hover { text-decoration: underline; }
 }
 .editor-header-actions { display: flex; gap: 8px; }
 .editor-meta {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: grid; grid-template-columns: 1fr 1fr;
   gap: 12px; margin-bottom: 12px;
   background: var(--bg-primary); padding: 16px;
   border-radius: var(--radius); border: 1px solid var(--border-color);
 }
-.meta-row { display: flex; flex-direction: column; gap: 4px; }
+.meta-row { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.meta-row--full { grid-column: 1 / -1; }
 .meta-row label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
 .meta-row input {
   padding: 6px 10px; border: 1px solid var(--border-color);
   border-radius: 4px; background: var(--bg-secondary);
   color: var(--text-primary); font-size: 0.875rem;
+  width: 100%;
 }
 .meta-row input:focus { outline: none; border-color: var(--accent); }
+
+/* 标签 chips */
+.tags-field {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 5px 8px; border: 1px solid var(--border-color);
+  border-radius: 4px; background: var(--bg-secondary);
+  min-height: 33px;
+}
+.tags-field:focus-within { border-color: var(--accent); }
+.tag-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 4px 2px 8px; border-radius: 4px;
+  background: var(--accent); color: #fff; font-size: 0.8rem;
+  white-space: nowrap;
+}
+.tag-chip button {
+  border: none; background: none; color: #fff; cursor: pointer;
+  font-size: 0.95rem; line-height: 1; padding: 0 2px; opacity: 0.8;
+}
+.tag-chip button:hover { opacity: 1; }
+.tags-field input {
+  border: none !important; background: none !important; padding: 2px !important;
+  flex: 1; min-width: 80px; outline: none;
+}
 .editor-toolbar {
   display: flex; align-items: center; gap: 4px;
   padding: 8px 12px; background: var(--bg-primary);
@@ -337,7 +363,7 @@ a:hover { text-decoration: underline; }
         </div>
       </div>
       <div class="editor-meta">
-        <div class="meta-row">
+        <div class="meta-row meta-row--full">
           <label>标题<span class="required-mark">*</span></label>
           <input type="text" id="meta-title" placeholder="文章标题">
         </div>
@@ -351,12 +377,15 @@ a:hover { text-decoration: underline; }
           </datalist>
         </div>
         <div class="meta-row">
-          <label>标签</label>
-          <input type="text" id="meta-tags" placeholder="逗号分隔，如：Spring Boot, MySQL">
-        </div>
-        <div class="meta-row">
           <label>系列</label>
           <input type="text" id="meta-series" placeholder="可选，系列名称">
+        </div>
+        <div class="meta-row meta-row--full">
+          <label>标签</label>
+          <div class="tags-field" id="tags-field" onclick="document.getElementById('tag-input').focus()">
+            <input type="text" id="tag-input" placeholder="输入标签后回车或逗号添加">
+          </div>
+          <input type="hidden" id="meta-tags">
         </div>
       </div>
       <div class="editor-toolbar">
@@ -642,11 +671,11 @@ function showEditor(file) {
   // 清空表单
   document.getElementById('meta-title').value = '';
   document.getElementById('meta-category').value = '';
-  document.getElementById('meta-tags').value = '';
   document.getElementById('meta-series').value = '';
   document.getElementById('meta-draft').checked = false;
   document.getElementById('editor-textarea').value = '';
   document.getElementById('preview-pane').innerHTML = '';
+  setTags('');
   editingFile = file;
   preservedFm = {};
   isDirty = false;
@@ -679,6 +708,61 @@ async function editPost(path, sha, name, status) {
 
 // 已被表单接管的字段，其余字段原样保留
 const MANAGED_KEYS = ['title', 'category', 'tags', 'series', 'published'];
+
+// ============================================================
+// 标签 chips 管理
+// ============================================================
+let tagList = [];
+
+function renderTags() {
+  const field = document.getElementById('tags-field');
+  const input = document.getElementById('tag-input');
+  // 移除已有 chip（保留 input）
+  field.querySelectorAll('.tag-chip').forEach(c => c.remove());
+  tagList.forEach((tag, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = `<span></span><button type="button" title="移除">×</button>`;
+    chip.querySelector('span').textContent = tag;
+    chip.querySelector('button').onclick = () => { removeTag(i); };
+    field.insertBefore(chip, input);
+  });
+  document.getElementById('meta-tags').value = tagList.join(', ');
+}
+
+function addTag(raw) {
+  raw.split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
+    if (!tagList.includes(t)) tagList.push(t);
+  });
+  renderTags();
+  scheduleAutoSave();
+}
+
+function removeTag(i) {
+  tagList.splice(i, 1);
+  renderTags();
+  scheduleAutoSave();
+}
+
+function setTags(str) {
+  tagList = (str || '').split(',').map(t => t.trim()).filter(Boolean);
+  renderTags();
+}
+
+function initTagInput() {
+  const input = document.getElementById('tag-input');
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      if (input.value.trim()) { addTag(input.value); input.value = ''; }
+    } else if (e.key === 'Backspace' && !input.value && tagList.length) {
+      removeTag(tagList.length - 1);
+    }
+  });
+  input.addEventListener('blur', () => {
+    if (input.value.trim()) { addTag(input.value); input.value = ''; }
+  });
+}
 
 function parseFrontMatter(fm) {
   preservedFm = {};
@@ -719,7 +803,7 @@ function parseFrontMatter(fm) {
       } else {
         tags = val.replace(/^\[|\]$/g, '').split(',').map(t => t.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
       }
-      document.getElementById('meta-tags').value = tags.join(', ');
+      setTags(tags.join(', '));
     }
     else if (key === 'series') document.getElementById('meta-series').value = clean;
     else if (key === 'published') document.getElementById('meta-draft').checked = (clean === 'false');
@@ -865,7 +949,7 @@ function restoreLocalDraft() {
       showEditor(d.path ? { path: d.path, name: d.path.split('/').pop() } : null);
       document.getElementById('meta-title').value = d.title || '';
       document.getElementById('meta-category').value = d.category || '';
-      document.getElementById('meta-tags').value = d.tags || '';
+      setTags(d.tags || '');
       document.getElementById('meta-series').value = d.series || '';
       document.getElementById('meta-draft').checked = !!d.draft;
       document.getElementById('editor-textarea').value = d.content || '';
@@ -1095,10 +1179,11 @@ function initDragDrop() {
 // ============================================================
 function initGlobalEvents() {
   // meta 输入框变更标记 dirty
-  ['meta-title', 'meta-category', 'meta-tags', 'meta-series'].forEach(id => {
+  ['meta-title', 'meta-category', 'meta-series'].forEach(id => {
     document.getElementById(id).addEventListener('input', scheduleAutoSave);
   });
   document.getElementById('meta-draft').addEventListener('change', () => { isDirty = true; });
+  initTagInput();
 
   // 关闭/刷新页面前提醒
   window.addEventListener('beforeunload', e => {
