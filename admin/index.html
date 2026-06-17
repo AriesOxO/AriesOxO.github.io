@@ -9,6 +9,7 @@ permalink: /admin/
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>博客管理后台</title>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 <style>
 /* === CSS 变量与主题 === */
 :root {
@@ -36,6 +37,11 @@ permalink: /admin/
     --text-secondary: #a0a0a0;
     --border-color: #2a2a4a;
     --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --accent: #4d94ff;
+    --accent-hover: #6ba6ff;
+    --danger: #ff6b6b;
+    --danger-hover: #ff8787;
+    --success: #51cf66;
   }
 }
 /* === 全局重置 === */
@@ -65,7 +71,9 @@ a:hover { text-decoration: underline; }
 }
 .header h1 { font-size: 1.25rem; font-weight: 600; }
 .header-actions { display: flex; align-items: center; gap: 12px; }
-.main { flex: 1; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; }
+.main { flex: 1; padding: 24px; max-width: 1400px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; min-height: 0; }
+#panel-list { display: flex; flex-direction: column; min-height: 0; }
+#panel-editor { flex: 1; min-height: 0; }
 
 /* === 按钮 === */
 .btn {
@@ -85,6 +93,31 @@ a:hover { text-decoration: underline; }
 .btn-outline:hover { background: var(--bg-tertiary); }
 .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
 .btn-lg { padding: 12px 24px; font-size: 1rem; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn .spinner {
+  width: 13px; height: 13px; border: 2px solid currentColor;
+  border-top-color: transparent; border-radius: 50%;
+  display: inline-block; animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* === 状态徽章 === */
+.badge {
+  font-size: 0.7rem; padding: 2px 8px; border-radius: 10px;
+  font-weight: 600; margin-left: 8px;
+}
+.badge-draft { background: var(--bg-tertiary); color: var(--text-secondary); }
+.badge-published { background: var(--success); color: #fff; }
+.required-mark { color: var(--danger); margin-left: 2px; }
+
+/* === 加载动画 === */
+.loading-spinner {
+  width: 32px; height: 32px; border: 3px solid var(--border-color);
+  border-top-color: var(--accent); border-radius: 50%;
+  margin: 0 auto 12px; animation: spin 0.7s linear infinite;
+}
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text-secondary); }
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
 
 /* === 登录视图 === */
 .login-view {
@@ -162,7 +195,7 @@ a:hover { text-decoration: underline; }
   display: grid; grid-template-columns: 1fr 1fr;
   border: 1px solid var(--border-color); border-top: none;
   border-radius: 0 0 var(--radius) var(--radius);
-  overflow: hidden; height: calc(100vh - 340px); min-height: 400px;
+  overflow: hidden; flex: 1; min-height: 400px;
 }
 .editor-pane { position: relative; display: flex; flex-direction: column; }
 .editor-pane textarea {
@@ -236,11 +269,17 @@ a:hover { text-decoration: underline; }
 }
 
 /* === 响应式 === */
+@media (max-width: 1200px) {
+  .editor-meta { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 768px) {
   .main { padding: 12px; }
-  .editor-body { grid-template-columns: 1fr; height: auto; }
+  .editor-body { grid-template-columns: 1fr; flex: none; height: auto; }
+  .editor-pane textarea { min-height: 320px; }
   .preview-pane { border-left: none; border-top: 1px solid var(--border-color); min-height: 300px; }
   .editor-meta { grid-template-columns: 1fr; }
+  .editor-toolbar { gap: 6px; }
+  .editor-toolbar .btn-sm { padding: 6px 12px; }
   .post-item { flex-direction: column; align-items: flex-start; gap: 8px; }
   .post-actions { margin-left: 0; }
   .header { padding: 10px 14px; }
@@ -275,6 +314,11 @@ a:hover { text-decoration: underline; }
     <div id="panel-list">
       <div class="list-toolbar">
         <button class="btn btn-primary" onclick="showEditor(null)">+ 新建文章</button>
+        <select id="filter-status" class="search-input" style="flex:0 0 auto;min-width:auto;" onchange="filterPosts()">
+          <option value="all">全部</option>
+          <option value="published">已发布</option>
+          <option value="draft">草稿</option>
+        </select>
         <input type="text" id="search-input" class="search-input" placeholder="搜索文章..." oninput="filterPosts()">
       </div>
       <div id="posts-container" class="posts-container">
@@ -282,21 +326,29 @@ a:hover { text-decoration: underline; }
       </div>
     </div>
     <!-- 编辑器视图 -->
-    <div id="panel-editor" style="display:none;">
+    <div id="panel-editor" style="display:none; flex-direction:column;">
       <div class="editor-header">
         <button class="btn btn-outline" onclick="showList()">← 返回列表</button>
         <div class="editor-header-actions">
-          <button class="btn btn-primary" onclick="savePost()">保存文章</button>
+          <label class="draft-toggle" style="display:flex;align-items:center;gap:6px;font-size:0.85rem;color:var(--text-secondary);cursor:pointer;">
+            <input type="checkbox" id="meta-draft"> 存为草稿
+          </label>
+          <button class="btn btn-primary" id="btn-save" onclick="savePost()">保存文章</button>
         </div>
       </div>
       <div class="editor-meta">
         <div class="meta-row">
-          <label>标题</label>
+          <label>标题<span class="required-mark">*</span></label>
           <input type="text" id="meta-title" placeholder="文章标题">
         </div>
         <div class="meta-row">
           <label>分类</label>
-          <input type="text" id="meta-category" placeholder="如：Java">
+          <input type="text" id="meta-category" placeholder="如：Java" list="category-list">
+          <datalist id="category-list">
+            <option value="Java"><option value="数据库"><option value="前端">
+            <option value="工具"><option value="算法"><option value="服务器">
+            <option value="开发记录"><option value="Linux"><option value="Rust">
+          </datalist>
         </div>
         <div class="meta-row">
           <label>标签</label>
@@ -308,15 +360,20 @@ a:hover { text-decoration: underline; }
         </div>
       </div>
       <div class="editor-toolbar">
-        <button class="btn btn-outline btn-sm" onclick="insertMd('bold')" title="加粗">B</button>
-        <button class="btn btn-outline btn-sm" onclick="insertMd('italic')" title="斜体"><em>I</em></button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('bold')" title="加粗 (Ctrl+B)"><strong>B</strong></button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('italic')" title="斜体 (Ctrl+I)"><em>I</em></button>
         <button class="btn btn-outline btn-sm" onclick="insertMd('code')" title="代码块">&lt;/&gt;</button>
-        <button class="btn btn-outline btn-sm" onclick="insertMd('link')" title="链接">🔗</button>
-        <button class="btn btn-outline btn-sm" onclick="insertMd('image')" title="图片">🖼</button>
-        <button class="btn btn-outline btn-sm" onclick="insertMd('h2')" title="标题">H2</button>
-        <button class="btn btn-outline btn-sm" onclick="insertMd('h3')" title="标题">H3</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('h2')" title="二级标题">H2</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('h3')" title="三级标题">H3</button>
         <span class="toolbar-sep"></span>
-        <button class="btn btn-outline btn-sm" onclick="triggerImageUpload()">📤 上传图片</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('ul')" title="无序列表">• 列表</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('ol')" title="有序列表">1. 列表</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('quote')" title="引用">❝ 引用</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('table')" title="表格">▦ 表格</button>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('hr')" title="分割线">―</button>
+        <span class="toolbar-sep"></span>
+        <button class="btn btn-outline btn-sm" onclick="insertMd('link')" title="链接">🔗 链接</button>
+        <button class="btn btn-outline btn-sm" id="btn-upload" onclick="triggerImageUpload()">📤 图片</button>
         <input type="file" id="image-upload" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
       </div>
       <div class="editor-body">
@@ -348,6 +405,9 @@ const API_BASE = 'https://api.github.com';
 // ============================================================
 let currentPosts = [];
 let editingFile = null; // { path, sha, name }
+let preservedFm = {};   // 编辑时保留的未知 front matter 字段（原样回写）
+let isDirty = false;    // 是否有未保存改动
+let autoSaveTimer = null;
 
 // ============================================================
 // 工具函数
@@ -380,12 +440,38 @@ async function apiRequest(endpoint, options = {}) {
     'Accept': 'application/vnd.github.v3+json',
     ...options.headers
   };
-  const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+  } catch (e) {
+    throw new Error('网络请求失败，请检查网络连接');
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `API 请求失败: ${res.status}`);
+    const e = new Error(mapApiError(res.status, err.message));
+    e.status = res.status;
+    // token 过期/无效：自动登出
+    if (res.status === 401) {
+      clearToken();
+      setTimeout(() => showView('login'), 1500);
+    }
+    throw e;
   }
   return res.status === 204 ? null : res.json();
+}
+
+function mapApiError(status, msg) {
+  switch (status) {
+    case 401: return '登录已过期，请重新登录';
+    case 403:
+      if (msg && msg.includes('rate limit')) return 'API 请求频率超限，请稍后再试';
+      return '权限不足，无法执行此操作';
+    case 404: return '资源不存在（文件可能已被删除）';
+    case 409: return '文件已被外部修改（sha 冲突）';
+    case 422: return '文件已存在或内容校验失败';
+    case 429: return '请求过于频繁，请稍后再试';
+    default: return msg || `请求失败 (${status})`;
+  }
 }
 </script>
 <script>
@@ -452,55 +538,76 @@ function showView(view) {
 // ============================================================
 // 文章列表模块
 // ============================================================
-async function loadPosts() {
-  const container = document.getElementById('posts-container');
-  container.innerHTML = '<div class="loading">加载文章列表中...</div>';
+async function loadDir(dir, status) {
   try {
-    const files = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/_posts`);
-    currentPosts = files
+    const files = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${dir}`);
+    return files
       .filter(f => f.name.endsWith('.md'))
       .map(f => {
         const match = f.name.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.md$/);
         return {
-          name: f.name,
-          path: f.path,
-          sha: f.sha,
+          name: f.name, path: f.path, sha: f.sha,
           date: match ? match[1] : '',
-          title: match ? match[2].replace(/-/g, ' ') : f.name
+          title: match ? match[2].replace(/-/g, ' ') : f.name,
+          status
         };
-      })
-      .sort((a, b) => b.date.localeCompare(a.date));
-    renderPosts(currentPosts);
+      });
   } catch (e) {
-    container.innerHTML = `<div class="loading" style="color:var(--danger)">加载失败: ${e.message}</div>`;
+    if (e.status === 404) return []; // 目录不存在视为空
+    throw e;
+  }
+}
+
+async function loadPosts() {
+  const container = document.getElementById('posts-container');
+  container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>加载文章列表中...</div>';
+  try {
+    const [posts, drafts] = await Promise.all([
+      loadDir('_posts', 'published'),
+      loadDir('_drafts', 'draft')
+    ]);
+    currentPosts = [...posts, ...drafts].sort((a, b) => b.date.localeCompare(a.date));
+    filterPosts();
+  } catch (e) {
+    container.innerHTML = `<div class="empty-state" style="color:var(--danger)">
+      <div class="empty-state-icon">⚠️</div>加载失败: ${escapeHtml(e.message)}
+      <div style="margin-top:12px"><button class="btn btn-outline btn-sm" onclick="loadPosts()">重试</button></div>
+    </div>`;
   }
 }
 
 function renderPosts(posts) {
   const container = document.getElementById('posts-container');
   if (posts.length === 0) {
-    container.innerHTML = '<div class="loading">暂无文章</div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div>暂无文章，点击「新建文章」开始写作</div>';
     return;
   }
-  container.innerHTML = posts.map(p => `
+  container.innerHTML = posts.map(p => {
+    const badge = p.status === 'draft'
+      ? '<span class="badge badge-draft">草稿</span>'
+      : '<span class="badge badge-published">已发布</span>';
+    return `
     <div class="post-item">
       <div class="post-info">
-        <div class="post-title">${escapeHtml(p.title)}</div>
+        <div class="post-title">${escapeHtml(p.title)}${badge}</div>
         <div class="post-date">${p.date}</div>
       </div>
       <div class="post-actions">
-        <button class="btn btn-outline btn-sm" onclick="editPost('${p.path}', '${p.sha}', '${escapeAttr(p.name)}')">编辑</button>
-        <button class="btn btn-danger btn-sm" onclick="deletePost('${p.path}', '${p.sha}', '${escapeAttr(p.name)}')">删除</button>
+        <button class="btn btn-outline btn-sm" onclick="editPost('${escapeAttr(p.path)}', '${p.sha}', '${escapeAttr(p.name)}', '${p.status}')">编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="deletePost('${escapeAttr(p.path)}', '${p.sha}', '${escapeAttr(p.name)}')">删除</button>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 function filterPosts() {
   const query = document.getElementById('search-input').value.toLowerCase();
-  const filtered = currentPosts.filter(p =>
-    p.title.toLowerCase().includes(query) || p.date.includes(query)
-  );
+  const status = document.getElementById('filter-status').value;
+  const filtered = currentPosts.filter(p => {
+    const matchQuery = p.title.toLowerCase().includes(query) || p.date.includes(query);
+    const matchStatus = status === 'all' || p.status === status;
+    return matchQuery && matchStatus;
+  });
   renderPosts(filtered);
 }
 
@@ -520,26 +627,33 @@ function escapeAttr(str) {
 // 编辑器模块
 // ============================================================
 function showList() {
-  document.getElementById('panel-list').style.display = 'block';
+  if (isDirty && !confirm('有未保存的修改，确定要离开吗？')) return;
+  document.getElementById('panel-list').style.display = 'flex';
   document.getElementById('panel-editor').style.display = 'none';
   editingFile = null;
+  isDirty = false;
+  clearLocalDraft();
+  loadPosts();
 }
 
 function showEditor(file) {
   document.getElementById('panel-list').style.display = 'none';
-  document.getElementById('panel-editor').style.display = 'block';
+  document.getElementById('panel-editor').style.display = 'flex';
   // 清空表单
   document.getElementById('meta-title').value = '';
   document.getElementById('meta-category').value = '';
   document.getElementById('meta-tags').value = '';
   document.getElementById('meta-series').value = '';
+  document.getElementById('meta-draft').checked = false;
   document.getElementById('editor-textarea').value = '';
   document.getElementById('preview-pane').innerHTML = '';
   editingFile = file;
+  preservedFm = {};
+  isDirty = false;
 }
 
-async function editPost(path, sha, name) {
-  showEditor({ path, sha, name });
+async function editPost(path, sha, name, status) {
+  showEditor({ path, sha, name, status });
   showToast('加载文章内容...', 'info');
   try {
     const data = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`);
@@ -553,29 +667,63 @@ async function editPost(path, sha, name) {
     } else {
       document.getElementById('editor-textarea').value = content;
     }
+    // 草稿目录的文章默认勾选草稿
+    if (status === 'draft') document.getElementById('meta-draft').checked = true;
     updatePreview();
+    isDirty = false;
     showToast('文章已加载', 'success');
   } catch (e) {
     showToast(`加载失败: ${e.message}`, 'error');
   }
 }
 
+// 已被表单接管的字段，其余字段原样保留
+const MANAGED_KEYS = ['title', 'category', 'tags', 'series', 'published'];
+
 function parseFrontMatter(fm) {
+  preservedFm = {};
   const lines = fm.split('\n');
-  for (const line of lines) {
-    const m = line.match(/^(\w+):\s*(.*)$/);
-    if (!m) continue;
-    const [, key, val] = m;
-    if (key === 'title') {
-      document.getElementById('meta-title').value = val.replace(/^["']|["']$/g, '');
-    } else if (key === 'category') {
-      document.getElementById('meta-category').value = val;
-    } else if (key === 'tags') {
-      const tags = val.replace(/^\[|\]$/g, '').trim();
-      document.getElementById('meta-tags').value = tags;
-    } else if (key === 'series') {
-      document.getElementById('meta-series').value = val.replace(/^["']|["']$/g, '');
+  let i = 0;
+  const fields = {};
+  while (i < lines.length) {
+    const line = lines[i];
+    const m = line.match(/^([\w-]+):\s*(.*)$/);
+    if (!m) { i++; continue; }
+    const key = m[1];
+    let rawVal = m[2];
+    // YAML 块标量 (| 或 >) 或多行数组：收集后续缩进行
+    if (rawVal === '|' || rawVal === '>' || rawVal === '') {
+      const block = [];
+      let j = i + 1;
+      while (j < lines.length && (lines[j].match(/^\s+/) || lines[j].trim() === '')) {
+        block.push(lines[j]); j++;
+      }
+      if (block.length) {
+        fields[key] = rawVal + '\n' + block.join('\n');
+        i = j; continue;
+      }
     }
+    fields[key] = rawVal;
+    i++;
+  }
+  // 填入表单 / 保留未知
+  for (const [key, val] of Object.entries(fields)) {
+    const clean = String(val).replace(/^["']|["']$/g, '');
+    if (key === 'title') document.getElementById('meta-title').value = clean;
+    else if (key === 'category') document.getElementById('meta-category').value = clean;
+    else if (key === 'tags') {
+      // 支持 [a, b] 行内格式；YAML 列表格式取每行 - 项
+      let tags;
+      if (val.includes('\n')) {
+        tags = val.split('\n').map(l => l.replace(/^\s*-\s*/, '').trim()).filter(Boolean);
+      } else {
+        tags = val.replace(/^\[|\]$/g, '').split(',').map(t => t.trim().replace(/^["']|["']$/g, '')).filter(Boolean);
+      }
+      document.getElementById('meta-tags').value = tags.join(', ');
+    }
+    else if (key === 'series') document.getElementById('meta-series').value = clean;
+    else if (key === 'published') document.getElementById('meta-draft').checked = (clean === 'false');
+    else preservedFm[key] = val; // 未知字段原样保留
   }
 }
 
@@ -584,12 +732,25 @@ function buildFrontMatter() {
   const category = document.getElementById('meta-category').value.trim();
   const tags = document.getElementById('meta-tags').value.trim();
   const series = document.getElementById('meta-series').value.trim();
+  const isDraft = document.getElementById('meta-draft').checked;
 
   let fm = '---\n';
-  fm += `title: "${title}"\n`;
+  fm += `title: "${title.replace(/"/g, '\\"')}"\n`;
   if (category) fm += `category: ${category}\n`;
-  if (tags) fm += `tags: [${tags}]\n`;
-  if (series) fm += `series: "${series}"\n`;
+  if (tags) {
+    const arr = tags.split(',').map(t => t.trim()).filter(Boolean);
+    fm += `tags: [${arr.join(', ')}]\n`;
+  }
+  if (series) fm += `series: "${series.replace(/"/g, '\\"')}"\n`;
+  if (isDraft) fm += `published: false\n`;
+  // 回写保留的未知字段
+  for (const [key, val] of Object.entries(preservedFm)) {
+    if (String(val).includes('\n')) {
+      fm += `${key}: ${val}\n`;
+    } else {
+      fm += `${key}: ${val}\n`;
+    }
+  }
   fm += '---\n';
   return fm;
 }
@@ -598,45 +759,121 @@ function buildFrontMatter() {
 // 保存文章
 // ============================================================
 async function savePost() {
+  const btn = document.getElementById('btn-save');
+  if (btn.disabled) return; // 防重复提交
   const title = document.getElementById('meta-title').value.trim();
   if (!title) {
     showToast('请输入文章标题', 'error');
     return;
   }
+  const isDraft = document.getElementById('meta-draft').checked;
+  const targetDir = isDraft ? '_drafts' : '_posts';
   const content = document.getElementById('editor-textarea').value;
   const fullContent = buildFrontMatter() + '\n' + content;
   const encoded = encodeBase64(fullContent);
 
-  let path, message;
-  if (editingFile && editingFile.path) {
-    // 更新已有文章
-    path = editingFile.path;
-    message = `docs: 更新文章 ${editingFile.name}`;
+  // 确定文件名
+  let filename;
+  if (editingFile && editingFile.name) {
+    filename = editingFile.name;
   } else {
-    // 新建文章
     const date = new Date().toISOString().slice(0, 10);
-    const slug = generateSlug(title);
-    const filename = `${date}-${slug}.md`;
-    path = `_posts/${filename}`;
-    message = `docs: 新建文章 ${filename}`;
+    filename = `${date}-${generateSlug(title)}.md`;
   }
+  const path = `${targetDir}/${filename}`;
+  const oldPath = editingFile && editingFile.path;
+  const isMoving = oldPath && oldPath !== path; // 草稿↔发布切换需移动
 
-  showToast('保存中...', 'info');
+  setBtnLoading(btn, true, '保存中...');
   try {
-    const body = { message, content: encoded };
-    if (editingFile && editingFile.sha) {
-      body.sha = editingFile.sha;
-    }
+    const body = { message: `docs: ${editingFile && editingFile.path ? '更新' : '新建'}${isDraft ? '草稿' : '文章'} ${filename}`, content: encoded };
+    // 移动时不带 sha（新文件），否则带 sha（更新）
+    if (!isMoving && editingFile && editingFile.sha) body.sha = editingFile.sha;
     const res = await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    editingFile = { path, sha: res.content.sha, name: path.split('/').pop() };
-    showToast('保存成功！', 'success');
+    // 移动成功后删除旧目录的文件
+    if (isMoving) {
+      await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${oldPath}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: `docs: 移动文章 ${filename}`, sha: editingFile.sha })
+      });
+    }
+    editingFile = { path, sha: res.content.sha, name: filename, status: isDraft ? 'draft' : 'published' };
+    isDirty = false;
+    clearLocalDraft();
+    showToast(isDraft ? '已保存为草稿' : '保存成功！', 'success');
   } catch (e) {
-    showToast(`保存失败: ${e.message}`, 'error');
+    if (e.status === 409) {
+      showToast('文件已被外部修改，请返回列表重新打开后再保存', 'error');
+    } else {
+      showToast(`保存失败: ${e.message}`, 'error');
+    }
+  } finally {
+    setBtnLoading(btn, false, '保存文章');
   }
+}
+
+function setBtnLoading(btn, loading, text) {
+  btn.disabled = loading;
+  btn.innerHTML = loading ? `<span class="spinner"></span> ${text}` : text;
+}
+
+// ============================================================
+// localStorage 自动保存
+// ============================================================
+const LOCAL_DRAFT_KEY = 'admin_local_draft';
+
+function collectDraft() {
+  return {
+    title: document.getElementById('meta-title').value,
+    category: document.getElementById('meta-category').value,
+    tags: document.getElementById('meta-tags').value,
+    series: document.getElementById('meta-series').value,
+    draft: document.getElementById('meta-draft').checked,
+    content: document.getElementById('editor-textarea').value,
+    path: editingFile ? editingFile.path : null,
+    savedAt: Date.now()
+  };
+}
+
+function scheduleAutoSave() {
+  isDirty = true;
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    const d = collectDraft();
+    if (d.title || d.content) {
+      localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(d));
+    }
+  }, 1000);
+}
+
+function clearLocalDraft() {
+  localStorage.removeItem(LOCAL_DRAFT_KEY);
+}
+
+function restoreLocalDraft() {
+  const raw = localStorage.getItem(LOCAL_DRAFT_KEY);
+  if (!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    const when = new Date(d.savedAt).toLocaleString('zh-CN');
+    if (confirm(`检测到未保存的草稿（${when}）\n标题：${d.title || '(无标题)'}\n\n是否恢复？`)) {
+      showEditor(d.path ? { path: d.path, name: d.path.split('/').pop() } : null);
+      document.getElementById('meta-title').value = d.title || '';
+      document.getElementById('meta-category').value = d.category || '';
+      document.getElementById('meta-tags').value = d.tags || '';
+      document.getElementById('meta-series').value = d.series || '';
+      document.getElementById('meta-draft').checked = !!d.draft;
+      document.getElementById('editor-textarea').value = d.content || '';
+      updatePreview();
+    } else {
+      clearLocalDraft();
+    }
+  } catch (e) { clearLocalDraft(); }
 }
 
 function generateSlug(title) {
@@ -650,8 +887,11 @@ function generateSlug(title) {
 // ============================================================
 // 删除文章
 // ============================================================
+let deleting = false;
 async function deletePost(path, sha, name) {
+  if (deleting) return;
   if (!confirm(`确定要删除文章「${name}」吗？此操作不可撤销。`)) return;
+  deleting = true;
   showToast('删除中...', 'info');
   try {
     await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
@@ -666,6 +906,8 @@ async function deletePost(path, sha, name) {
     loadPosts();
   } catch (e) {
     showToast(`删除失败: ${e.message}`, 'error');
+  } finally {
+    deleting = false;
   }
 }
 
@@ -674,8 +916,10 @@ async function deletePost(path, sha, name) {
 // ============================================================
 function updatePreview() {
   const md = document.getElementById('editor-textarea').value;
-  const html = marked.parse(md);
+  const raw = marked.parse(md);
+  const html = window.DOMPurify ? DOMPurify.sanitize(raw) : raw;
   document.getElementById('preview-pane').innerHTML = html;
+  scheduleAutoSave();
 }
 
 // ============================================================
@@ -687,22 +931,40 @@ function insertMd(type) {
   const end = ta.selectionEnd;
   const selected = ta.value.substring(start, end);
   let insert = '';
+  // 是否选中占位文本（无选区时选中占位词方便替换）
+  let selStart = null, selEnd = null;
+
+  function withPlaceholder(prefix, placeholder, suffix) {
+    if (selected) return prefix + selected + suffix;
+    insert = prefix + placeholder + suffix;
+    selStart = start + prefix.length;
+    selEnd = selStart + placeholder.length;
+    return insert;
+  }
 
   switch (type) {
-    case 'bold': insert = `**${selected || '粗体文本'}**`; break;
-    case 'italic': insert = `*${selected || '斜体文本'}*`; break;
+    case 'bold': insert = withPlaceholder('**', '粗体文本', '**'); break;
+    case 'italic': insert = withPlaceholder('*', '斜体文本', '*'); break;
     case 'code': insert = selected.includes('\n')
       ? `\n\`\`\`\n${selected || '代码'}\n\`\`\`\n`
-      : `\`${selected || '代码'}\``; break;
-    case 'link': insert = `[${selected || '链接文本'}](url)`; break;
-    case 'image': insert = `![${selected || '图片描述'}](url)`; break;
+      : withPlaceholder('`', '代码', '`'); break;
+    case 'link': insert = withPlaceholder('[', '链接文本', '](url)'); break;
     case 'h2': insert = `\n## ${selected || '标题'}\n`; break;
     case 'h3': insert = `\n### ${selected || '标题'}\n`; break;
+    case 'ul': insert = `\n- ${selected || '列表项'}\n`; break;
+    case 'ol': insert = `\n1. ${selected || '列表项'}\n`; break;
+    case 'quote': insert = `\n> ${selected || '引用内容'}\n`; break;
+    case 'hr': insert = `\n\n---\n\n`; break;
+    case 'table': insert = `\n| 列1 | 列2 |\n| --- | --- |\n| 内容 | 内容 |\n`; break;
   }
 
   ta.value = ta.value.substring(0, start) + insert + ta.value.substring(end);
   ta.focus();
-  ta.selectionStart = ta.selectionEnd = start + insert.length;
+  if (selStart !== null) {
+    ta.selectionStart = selStart; ta.selectionEnd = selEnd;
+  } else {
+    ta.selectionStart = ta.selectionEnd = start + insert.length;
+  }
   updatePreview();
 }
 
@@ -725,18 +987,27 @@ async function uploadImage(file) {
     showToast('请选择图片文件', 'error');
     return;
   }
-  showToast('上传图片中...', 'info');
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('图片过大（>5MB），请压缩后上传', 'error');
+    return;
+  }
+  const btn = document.getElementById('btn-upload');
+  if (btn.disabled) return;
+  setBtnLoading(btn, true, '上传中');
   try {
     const base64 = await fileToBase64(file);
     const timestamp = Date.now();
-    const ext = file.name.split('.').pop();
-    const path = `assets/images/posts/${timestamp}-${file.name}`;
+    const ext = (file.name.split('.').pop() || 'png').toLowerCase();
+    // 文件名 slug 化：去掉扩展名后只保留安全字符
+    const baseName = file.name.replace(/\.[^.]+$/, '');
+    const slug = baseName.replace(/[^a-zA-Z0-9_-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'image';
+    const path = `assets/images/posts/${timestamp}-${slug}.${ext}`;
 
     await apiRequest(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: `docs: 上传图片 ${file.name}`,
+        message: `docs: 上传图片 ${slug}.${ext}`,
         content: base64
       })
     });
@@ -745,13 +1016,15 @@ async function uploadImage(file) {
     const imgUrl = `/${path}`;
     const ta = document.getElementById('editor-textarea');
     const pos = ta.selectionStart;
-    const imgMd = `![${file.name}](${imgUrl})`;
+    const imgMd = `![${slug}](${imgUrl})`;
     ta.value = ta.value.substring(0, pos) + imgMd + ta.value.substring(pos);
     ta.selectionStart = ta.selectionEnd = pos + imgMd.length;
     updatePreview();
     showToast('图片上传成功', 'success');
   } catch (e) {
     showToast(`上传失败: ${e.message}`, 'error');
+  } finally {
+    setBtnLoading(btn, false, '📤 图片');
   }
 }
 
@@ -781,7 +1054,9 @@ function encodeBase64(str) {
 }
 
 function decodeBase64(base64) {
-  const binary = atob(base64);
+  // GitHub API 返回的 base64 含换行符，需先清除
+  const clean = base64.replace(/\s/g, '');
+  const binary = atob(clean);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
@@ -816,6 +1091,35 @@ function initDragDrop() {
 }
 
 // ============================================================
+// 全局事件：快捷键 + 未保存保护
+// ============================================================
+function initGlobalEvents() {
+  // meta 输入框变更标记 dirty
+  ['meta-title', 'meta-category', 'meta-tags', 'meta-series'].forEach(id => {
+    document.getElementById(id).addEventListener('input', scheduleAutoSave);
+  });
+  document.getElementById('meta-draft').addEventListener('change', () => { isDirty = true; });
+
+  // 关闭/刷新页面前提醒
+  window.addEventListener('beforeunload', e => {
+    if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  // 键盘快捷键
+  document.addEventListener('keydown', e => {
+    const editorVisible = document.getElementById('panel-editor').style.display !== 'none';
+    if (!editorVisible) return;
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault(); savePost();
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault(); insertMd('bold');
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+      e.preventDefault(); insertMd('italic');
+    }
+  });
+}
+
+// ============================================================
 // 应用初始化
 // ============================================================
 async function init() {
@@ -845,8 +1149,10 @@ async function init() {
   }
 
   showView('app');
+  initGlobalEvents();
   loadPosts();
   initDragDrop();
+  restoreLocalDraft();
 }
 
 // 页面加载完成后初始化

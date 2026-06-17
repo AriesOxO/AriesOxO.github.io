@@ -27,3 +27,6 @@ _site/
 .jekyll-metadata
 .jekyll-cache/
 .idea/
+
+# Cloudflare Wrangler
+admin/worker/.wrangler/
